@@ -9,5 +9,6 @@ pkgs.mkShellNoCC {
 		git
 		go
 		docker
+		cmake
 	];
 }
