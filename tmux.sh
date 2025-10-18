@@ -8,6 +8,7 @@ else
     tmux new-session -ds vox -n root
     # tmux send-keys -t vox:root "echo 'Root dir of the project'" C-m
     tmux new-window -t vox -n app
+    tmux send-keys -t vox:app "cd app/" C-m
     tmux set-option -t vox status-style fg=white,bg=black
     tmux attach -t vox
 fi
