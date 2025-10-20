@@ -19,6 +19,18 @@ func New() *Config {
 	return c
 }
 
+func (c *Config) GetPort() string {
+	return c.Port
+}
+
+func (c *Config) GetInstanceName() string {
+	return c.InstanceName
+}
+
+func (c *Config) GetLogLevel() slog.Level {
+	return c.LogLevel
+}
+
 func (c *Config) SetPort() {
 	c.Port = os.Getenv("PORT")
 	if c.Port == "" {
