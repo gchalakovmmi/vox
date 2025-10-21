@@ -1,3 +1,3 @@
-module github.com/gchalakovmmi/vox
+module vox
 
 go 1.24.6

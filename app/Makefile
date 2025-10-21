@@ -8,4 +8,5 @@ compile:
 
 run:
 	@echo "Running Binary"
+	export $$(grep -v '^#' .env | xargs)
 	./cmd/app/$(BINARY_NAME)
