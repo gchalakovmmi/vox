@@ -10,5 +10,6 @@ pkgs.mkShellNoCC {
 		go
 		docker
 		cmake
+		tree
 	];
 }
