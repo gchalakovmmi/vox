@@ -1,0 +1,33 @@
+package base
+
+import (
+	"strings"
+)
+
+templ Base(page string, sections templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>VOX { strings.ToUpper(page) }</title>
+			<link rel="icon" type="image/x-icon" href="/web/static/icons/favicon.ico"/>
+			<link rel="stylesheet" href="/static/css/base.css"/>
+			<link rel="stylesheet" href="/static/css/navbar.css"/>
+			<link rel="stylesheet" href="/static/css/footer.css"/>
+		</head>
+		<body>
+			<header class="header">
+				@navbar(page)
+			</header>
+
+			<main>
+				@sections
+			</main>
+
+			@footer()
+			<script src="/static/js/base.js"></script>
+			<script src="/static/js/navbar.js"></script>
+		</body>
+	</html>
+}

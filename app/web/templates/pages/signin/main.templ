@@ -1,0 +1,13 @@
+package signin
+
+import (
+	"vox/web/templates/base"
+)
+
+templ sections() {
+	@panel()
+}
+
+templ Handler(page string) {
+	@base.Base(page, sections())
+}

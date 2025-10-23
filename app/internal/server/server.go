@@ -20,7 +20,11 @@ func New(cfg *config.Config) *Server {
 
 func (srv *Server) CreateHandlers() http.Handler {
 	mux := http.NewServeMux()
+
+	mux.Handle("/web/static/", http.StripPrefix("/web/static/", http.FileServer(http.Dir("./web/static/"))))
+
 	mux.Handle("/health", handlers.Health())
+	mux.Handle("/signin", handlers.Signin("signin"))
 	
 	return mux
 }
