@@ -5,11 +5,24 @@ in
 
 pkgs.mkShellNoCC {
 	packages = with pkgs; [
+		bash
+		neovim
 		tmux
+		tree
 		git
 		go
-		docker
+		templ
 		cmake
-		tree
+		docker
 	];
+
+	# Set bash as the shell
+	shell = "${pkgs.bash}/bin/bash";
+
+	shellHook = ''
+		set -o vi
+		alias v='nvim'
+		alias vi='nvim'
+		alias vim='nvim'
+	'';
 }
