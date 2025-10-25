@@ -18,7 +18,7 @@ func main() {
 
 	slog.Info("Environment Variables", "PORT", cfg.GetPort(), "INSTANCE_NAME", cfg.GetInstanceName(), "LOG_LEVEL", cfg.GetLogLevel())
 
-	srv := server.New(cfg/*, db*/)
+	srv := server.New(cfg/*, db*/, server.Routes)
 	mux := srv.CreateHandlers()
 
 	slog.Info(fmt.Sprintf("Starting HTTP server on port %s", cfg.GetPort()))
