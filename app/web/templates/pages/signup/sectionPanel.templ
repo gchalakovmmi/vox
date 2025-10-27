@@ -6,24 +6,29 @@ templ panel(){
 			<h1>Sign Up</h1>
 			<form>
 				<div class="mb-3">
-					<label for="exampleInputEmail1" class="form-label">Email address</label>
-					<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-					<div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+					<label for="email" class="form-label">Email address</label>
+					<input type="email" class="form-control" id="email" aria-describedby="emailHelp">
+					<div id="emailHelp" class="form-text">you@example.com</div>
 				</div>
 				<div class="mb-3">
-					<label for="exampleInputPassword1" class="form-label">Password</label>
-					<input type="password" class="form-control" id="exampleInputPassword1">
+					<label for="password" class="form-label">Password</label>
+					<input type="password" class="form-control" id="password" aria-describedby="passwordHelp">
+					<div id="passwordHelp" class="form-text">At least 8 characters containing upper and lower case letters as well as symbols and numbers.</div>
 				</div>
-				<div class="mb-3 form-check">
-					<input type="checkbox" class="form-check-input" id="exampleCheck1">
-					<label class="form-check-label" for="exampleCheck1">Check me out</label>
+				<div class="mb-3">
+					<label for="password-repeat" class="form-label">Repeat Password</label>
+					<input type="password" class="form-control" id="password-repeat" aria-describedby="passwordRepeatHelp">
+					<div id="passwordRepeatHelp" class="form-text">Repeat the password you entered above.</div>
 				</div>
 				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+			<!-- Centered Google Button -->
+			<div class="d-flex justify-content-center mt-3">
 				<button class="btn btn-light btn-lg d-flex align-items-center shadow-sm border rounded-pill px-4 py-2">
 					<img src="/web/static/images/google-logo.webp" alt="Google Logo" class="me-2" width="24" height="24">
-					<span class="">Sign Up with Google</span>
+					<span>Sign Up with Google</span>
 				</button>
-			</form>
+			</div>
 		</div>
 	</div>
 }

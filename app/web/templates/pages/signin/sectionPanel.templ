@@ -6,27 +6,22 @@ templ panel(){
 			<h1>Sign In</h1>
 			<form>
 				<div class="mb-3">
-					<label for="exampleInputEmail1" class="form-label">Email address</label>
-					<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-					<div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+					<label for="email" class="form-label">Email address</label>
+					<input type="email" class="form-control" id="email">
 				</div>
 				<div class="mb-3">
-					<label for="exampleInputPassword1" class="form-label">Password</label>
-					<input type="password" class="form-control" id="exampleInputPassword1">
-				</div>
-				<div class="mb-3 form-check">
-					<input type="checkbox" class="form-check-input" id="exampleCheck1">
-					<label class="form-check-label" for="exampleCheck1">Check me out</label>
+					<label for="password" class="form-label">Password</label>
+					<input type="password" class="form-control" id="password">
 				</div>
 				<button type="submit" class="btn btn-primary">Submit</button>
-				<!-- Centered Google Button -->
-				<div class="d-flex justify-content-center mt-3">
-					<button class="btn btn-light btn-lg d-flex align-items-center shadow-sm border rounded-pill px-4 py-2">
-						<img src="/web/static/images/google-logo.webp" alt="Google Logo" class="me-2" width="24" height="24">
-						<span>Sign In with Google</span>
-					</button>
-				</div>
 			</form>
+			<!-- Centered Google Button -->
+			<div class="d-flex justify-content-center mt-3">
+				<button class="btn btn-light btn-lg d-flex align-items-center shadow-sm border rounded-pill px-4 py-2">
+					<img src="/web/static/images/google-logo.webp" alt="Google Logo" class="me-2" width="24" height="24">
+					<span>Sign In with Google</span>
+				</button>
+			</div>
 		</div>
 	</div>
 }
