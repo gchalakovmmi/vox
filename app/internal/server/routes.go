@@ -11,7 +11,9 @@ type Route struct {
 }
 
 var Routes = []Route {
-	{"/health", handlers.Health()},
-	{"/signin", handlers.Signin("signin", "Sign In")},
-	{"/signup", handlers.Signup("signup", "Sign Up")},
+	{	"/health",		handlers.Health()			},
+	{	"/signin",		handlers.Signin("signin", "Sign In")	},
+	// {	"/process-signin",	handlers.ProcessSignin()		},
+	{	"/signup",		handlers.Signup("signup", "Sign Up")	},
+	{	"/process-signup",	handlers.ProcessSignup()		},
 }
