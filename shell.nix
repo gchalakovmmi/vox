@@ -14,6 +14,7 @@ pkgs.mkShellNoCC {
 		templ
 		cmake
 		docker
+		libwebp
 	];
 
 	# Set bash as the shell
