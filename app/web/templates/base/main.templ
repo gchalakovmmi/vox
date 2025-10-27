@@ -1,16 +1,12 @@
 package base
 
-import (
-	"strings"
-)
-
-templ Base(page string, sections templ.Component) {
+templ Base(page string, title string, sections templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>VOX { strings.ToUpper(page) }</title>
+			<title>VOX { title }</title>
 			<link rel="icon" type="image/x-icon" href="/web/static/icons/favicon.ico"/>
 			<link rel="stylesheet" href="/web/static/styles/bootstrap-5.3.8-dist/bootstrap.min.css">
 		</head>

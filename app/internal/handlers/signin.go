@@ -6,9 +6,9 @@ import (
 	"vox/web/templates/pages/signin"
 )
 
-func Signin(page string) http.Handler {
+func Signin(page string, title string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templ.Handler(signin.Handler(page)).ServeHTTP(w, r)
+		templ.Handler(signin.Handler(page, title)).ServeHTTP(w, r)
 	})
 }
 
