@@ -10,9 +10,11 @@ templ Base(page string, title string, sections templ.Component) {
 			<link rel="icon" type="image/x-icon" href="/web/static/icons/favicon.ico"/>
 			<link rel="stylesheet" href="/web/static/styles/bootstrap-5.3.8-dist/bootstrap.min.css">
 		</head>
-		<body>
+		<body class="d-flex flex-column min-vh-100">
 			@navbar(page)
-			@sections
+			<main class="flex-grow-1">
+				@sections
+			</main>
 			@footer()
 
 			<script src="/web/static/scripts/bootstrap-5.3.8-dist/bootstrap.bundle.min.js"></script>
