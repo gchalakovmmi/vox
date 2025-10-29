@@ -2,12 +2,13 @@ package signin
 
 import (
 	"vox/web/templates/base"
+	"vox/internal/status"
 )
 
 templ sections() {
 	@panel()
 }
 
-templ Handler(page string, title string) {
-	@base.Base(page, title, sections())
+templ Handler(page string, title string, message status.StatusMessage) {
+	@base.Base(page, title, sections(), message)
 }

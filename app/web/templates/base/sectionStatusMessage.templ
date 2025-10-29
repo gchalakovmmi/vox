@@ -1,0 +1,10 @@
+package base
+
+import (
+	"vox/internal/status"
+)
+
+templ statusMessage(message status.StatusMessage) {
+	{message.Info}
+	{message.Err}
+}
