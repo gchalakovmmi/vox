@@ -6,6 +6,7 @@ import (
 	"vox/web/templates/pages/signup"
 	"log/slog"
 	sm "vox/internal/statusMessage"
+	up "vox/internal/userProfile"
 )
 
 func Signup(page string, title string) http.Handler {
@@ -15,6 +16,10 @@ func Signup(page string, title string) http.Handler {
 		statusMessage := sm.StatusMessage{ queryParams.Get("info"), queryParams.Get("error") }
 		slog.Debug("internal/handlers/signup.go", "StatusMessage", statusMessage)
 
-		templ.Handler(signup.Handler(page, title, statusMessage)).ServeHTTP(w, r)
+		userProfile := up.UserProfile{
+			Email:	queryParams.Get("Email"),
+		}
+		slog.Debug("Extracted form values from url", "Email", userProfile.Email)
+		templ.Handler(signup.Handler(page, title, statusMessage, &userProfile)).ServeHTTP(w, r)
 	})
 }
