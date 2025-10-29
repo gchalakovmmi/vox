@@ -1,10 +1,10 @@
 package base
 
 import (
-	"vox/internal/status"
+	sm "vox/internal/statusMessage"
 )
 
-templ statusMessage(message status.StatusMessage) {
-	{message.Info}
-	{message.Err}
+templ statusMessage(statusMessage sm.StatusMessage) {
+	{statusMessage.Info}
+	{statusMessage.Err}
 }

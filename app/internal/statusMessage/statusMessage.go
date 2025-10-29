@@ -1,4 +1,4 @@
-package status
+package statusMessage
 
 
 type StatusMessage struct {

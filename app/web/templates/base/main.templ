@@ -1,10 +1,10 @@
 package base
 
 import (
-	"vox/internal/status"
+	sm "vox/internal/statusMessage"
 )
 
-templ Base(page string, title string, sections templ.Component, message status.StatusMessage) {
+templ Base(page string, title string, sections templ.Component, statMessage sm.StatusMessage) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -17,7 +17,7 @@ templ Base(page string, title string, sections templ.Component, message status.S
 		<body class="d-flex flex-column min-vh-100">
 			@navbar(page)
 			<main class="flex-grow-1">
-				@statusMessage(message)
+				@statusMessage(statMessage)
 				@sections
 			</main>
 			@footer()

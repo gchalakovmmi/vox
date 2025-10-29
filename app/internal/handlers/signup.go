@@ -5,14 +5,14 @@ import (
 	"github.com/a-h/templ"
 	"vox/web/templates/pages/signup"
 	"log/slog"
-	"vox/internal/status"
+	sm "vox/internal/statusMessage"
 )
 
 func Signup(page string, title string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// IGNORE THIS IS FOR LATER!!! Take this out into a handler function named WithStatusMessage. Put the StatusMessage type there as well. What should the file be named? Leave it in the handlers package.
 		queryParams := r.URL.Query()
-		statusMessage := status.StatusMessage{ queryParams.Get("info"), queryParams.Get("error") }
+		statusMessage := sm.StatusMessage{ queryParams.Get("info"), queryParams.Get("error") }
 		slog.Debug("internal/handlers/signup.go", "StatusMessage", statusMessage)
 
 		templ.Handler(signup.Handler(page, title, statusMessage)).ServeHTTP(w, r)
