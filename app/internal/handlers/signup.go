@@ -9,17 +9,36 @@ import (
 	up "vox/internal/userProfile"
 )
 
-func Signup(page string, title string) http.Handler {
+func WithStatusMessage(next func(sm.StatusMessage) http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// IGNORE THIS IS FOR LATER!!! Take this out into a handler function named WithStatusMessage. Put the StatusMessage type there as well. What should the file be named? Leave it in the handlers package.
 		queryParams := r.URL.Query()
-		statusMessage := sm.StatusMessage{ queryParams.Get("info"), queryParams.Get("error") }
-		slog.Debug("internal/handlers/signup.go", "StatusMessage", statusMessage)
-
-		userProfile := up.UserProfile{
-			Email:	queryParams.Get("Email"),
+		statusMessage := sm.StatusMessage{
+			Info:  queryParams.Get("info"),
+			Err: queryParams.Get("error"),
 		}
-		slog.Debug("Extracted form values from url", "Email", userProfile.Email)
-		templ.Handler(signup.Handler(page, title, statusMessage, &userProfile)).ServeHTTP(w, r)
+
+		slog.Debug("WithStatusMessage middleware", "statusMessage", statusMessage)
+		next(statusMessage).ServeHTTP(w, r)
+	})
+}
+
+func WithFormAutoload(next func(up.UserProfile) http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		queryParams := r.URL.Query()
+		userProfile := up.UserProfile{
+			Email: queryParams.Get("Email"),
+		}
+		slog.Debug("WithFormAutoload middleware", "Email", userProfile.Email)
+		next(userProfile).ServeHTTP(w, r)
+	})
+}
+
+func Signup(page string, title string) http.Handler {
+	return WithStatusMessage(func(statusMessage sm.StatusMessage) http.Handler {
+		return WithFormAutoload(func(userProfile up.UserProfile) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				templ.Handler(signup.Handler(page, title, statusMessage, &userProfile)).ServeHTTP(w, r)
+			})
+		})
 	})
 }
