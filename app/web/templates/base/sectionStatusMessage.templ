@@ -4,7 +4,36 @@ import (
 	sm "vox/internal/statusMessage"
 )
 
+func getStatusMessagePhrase(key string) string {
+	messages := map[string]string{
+		// Error messages
+		"email":		"Please enter a valid email address.",
+		"password_length":	"Password must be at least 8 characters long.",
+		"password_uppercase":	"Password must contain at least one uppercase letter.",
+		"password_lowercase":	"Password must contain at least one lowercase letter.",
+		"password_number":	"Password must contain at least one number.",
+		"password_special":	"Password must contain at least one special character.",
+		"repeatedPassword":	"Passwords do not match.",
+		
+		// Info messages (empty for now, can be added later)
+	}
+
+	if message, exists := messages[key]; exists {
+		return message
+	}
+	
+	return key
+}
+
 templ statusMessage(statusMessage sm.StatusMessage) {
-	{statusMessage.Info}
-	{statusMessage.Err}
+	if statusMessage.Info != "" {
+		<div class="alert alert-info" role="alert">
+			{ getStatusMessagePhrase(statusMessage.Info) }
+		</div>
+	}
+	if statusMessage.Err != "" {
+		<div class="alert alert-danger" role="alert">
+			{ getStatusMessagePhrase(statusMessage.Err) }
+		</div>
+	}
 }
