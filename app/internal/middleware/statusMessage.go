@@ -1,4 +1,4 @@
-package statusMessage
+package middleware
 
 import (
 	"net/http"

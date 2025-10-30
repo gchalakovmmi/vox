@@ -1,7 +1,7 @@
 package base
 
 import (
-	sm "vox/internal/statusMessage"
+	m "vox/internal/middleware"
 )
 
 func getStatusMessagePhrase(key string) string {
@@ -25,7 +25,7 @@ func getStatusMessagePhrase(key string) string {
 	return key
 }
 
-templ statusMessage(statusMessage sm.StatusMessage) {
+templ statusMessage(statusMessage m.StatusMessage) {
 	if statusMessage.Info != "" {
 		<div class="alert alert-info" role="alert">
 			{ getStatusMessagePhrase(statusMessage.Info) }
