@@ -16,7 +16,7 @@ func ProcessSignup() http.Handler {
 		}
 
 		queryParams := url.Values{}
-		queryParams.Add("Email", url.QueryEscape(userProfile.Email))
+		queryParams.Add("email", url.QueryEscape(userProfile.Email))
 
 		if errorMessage := userProfile.ValidateSignUpInfo(); errorMessage != "" {
 			queryParams.Add("error", errorMessage)
