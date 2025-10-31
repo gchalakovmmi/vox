@@ -11,6 +11,14 @@ templ panel(userProfile *up.UserProfile){
 			<h1>Sign Up</h1>
 			<form action="/process-signup" method="POST">
 				<div class="mb-3">
+					<label for="first_name" class="form-label">First Name</label>
+					<input type="text" class="form-control" name="first_name" id="first_name" value={url.QueryUnescape(userProfile.FirstName)}>
+				</div>
+				<div class="mb-3">
+					<label for="last_name" class="form-label">Last Name</label>
+					<input type="text" class="form-control" name="last_name" id="last_name" value={url.QueryUnescape(userProfile.LastName)}>
+				</div>
+				<div class="mb-3">
 					<label for="email" class="form-label">Email address</label>
 					<input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={url.QueryUnescape(userProfile.Email)}>
 					<div id="emailHelp" class="form-text">you@example.com</div>

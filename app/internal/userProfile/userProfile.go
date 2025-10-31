@@ -46,6 +46,14 @@ func (u *UserProfile) verifyPassword() PasswordStrength {
 }
 
 func (u *UserProfile) ValidateSignUpInfo() string {
+	if u.FirstName == "" {
+		return "first_name"
+	}
+
+	if u.LastName == "" {
+		return "last_name"
+	}
+
 	if _, err := mail.ParseAddress(u.Email); err != nil {
 		return "email"
 	}
