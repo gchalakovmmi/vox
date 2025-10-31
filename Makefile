@@ -1,7 +1,12 @@
 NAME := vox
-IMAGE := vox-app
+APP_IMAGE := vox-app
+DATABASE_IMAGE := vox-database
 DREG := dreg.buldev.com
-.PHONY: clear app app-logs all up down restart
+DOMAIN := vox.buldev.com
+LINUX_USER := gchalakov
+SSH_KEY := ~/.ssh/ChaluSRV
+
+.PHONY: clear app app-logs database database-logs all up down restart
 
 clear:
 		@clear
@@ -11,19 +16,27 @@ app:
 		@echo "Compiling source code..."
 		@cd app && make generate compile
 		@echo "Building image..."
-		@docker compose up -d --build
+		@docker compose up -d --build app
 
-push: app
+push: app database
 		@echo "=== Push ==="
 		@docker tag $(IMAGE) $(DREG)/$(IMAGE):latest
-		@docker push $(DREG)/$(IMAGE):latest
-		@ssh root@vox.buldev.com
+		@docker push $(DREG)/$(APP_IMAGE):latest
+		@docker push $(DREG)/$(DATABASE_IMAGE):latest
+		@ssh -i $(SSH_KEY) $(LINUX_USER)@$(DOMAIN)
 
 app-logs:
 		@docker logs --follow $(NAME)-app-1
 
+database:
+		@echo "=== Database ==="
+		@echo "Building image..."
+		@docker compose up -d --build database
 
-all: app
+database-logs:
+		@docker logs --follow $(NAME)-database-1
+
+all: app database
 
 up:
 		docker compose up -d
