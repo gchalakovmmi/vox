@@ -1,4 +1,4 @@
-package middleware
+package form_autoload
 
 import (
 	"net/http"
@@ -20,7 +20,7 @@ func WithFormAutoload(next func(up.UserProfile) http.Handler) http.Handler {
 		if err != nil {
 			unescapedEmail = userProfile.Email
 		}
-		slog.Debug("internal/middleware/formAutoload.go", "Message", "Extracted form values from url", "FirstName", userProfile.FirstName, "LastName", userProfile.LastName, "Email", unescapedEmail)
+		slog.Debug("internal/form_autoload/form_autoload.go", "Message", "Extracted form values from url", "FirstName", userProfile.FirstName, "LastName", userProfile.LastName, "Email", unescapedEmail)
 		next(userProfile).ServeHTTP(w, r)
 	})
 }
