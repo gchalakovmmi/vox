@@ -2,7 +2,7 @@ package home
 
 import (
 	"vox/web/templates/base"
-	m "vox/internal/middleware"
+	sm "vox/internal/status_message"
 	up "vox/internal/userProfile"
 )
 
@@ -10,6 +10,6 @@ templ sections(userProfile *up.UserProfile) {
 	@panel(userProfile)
 }
 
-templ Handler(page string, title string, statusMessage m.StatusMessage, userProfile *up.UserProfile) {
+templ Handler(page string, title string, statusMessage sm.StatusMessage, userProfile *up.UserProfile) {
 	@base.Base(page, title, sections(userProfile), statusMessage, userProfile)
 }

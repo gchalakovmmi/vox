@@ -9,7 +9,7 @@ type Link struct {
 	Text		string
 }
 
-templ navbar(page string, userProfile up.UserProfile) {
+templ navbar(page string, userProfile *up.UserProfile) {
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="#">VOX</a>
