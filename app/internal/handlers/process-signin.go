@@ -35,7 +35,6 @@ func ProcessSignin() http.Handler {
 				return
 			}
 			queryParams = url.Values{}
-			queryParams.Add("info", "signin_success")
 			http.Redirect(w, r, "/home?"+queryParams.Encode(), http.StatusSeeOther)
 			return
 		})
