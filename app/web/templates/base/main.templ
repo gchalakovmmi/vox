@@ -2,9 +2,10 @@ package base
 
 import (
 	m "vox/internal/middleware"
+	up "vox/internal/userProfile"
 )
 
-templ Base(page string, title string, sections templ.Component, statMessage m.StatusMessage) {
+templ Base(page string, title string, sections templ.Component, statMessage m.StatusMessage, userProfile *up.UserProfile) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>

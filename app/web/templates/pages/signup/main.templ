@@ -11,5 +11,5 @@ templ sections(userProfile *up.UserProfile) {
 }
 
 templ Handler(page string, title string, statusMessage m.StatusMessage, userProfile *up.UserProfile) {
-	@base.Base(page, title, sections(userProfile), statusMessage)
+	@base.Base(page, title, sections(userProfile), statusMessage, userProfile)
 }
