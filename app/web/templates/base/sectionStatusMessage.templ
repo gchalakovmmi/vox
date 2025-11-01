@@ -7,17 +7,22 @@ import (
 func getStatusMessagePhrase(key string) string {
 	messages := map[string]string{
 		// Error messages
-		"first_name":		"Please enter a first name.",
-		"last_name":		"Please enter a last name.",
-		"email":		"Please enter a valid email address.",
-		"password_length":	"Password must be at least 8 characters long.",
-		"password_uppercase":	"Password must contain at least one uppercase letter.",
-		"password_lowercase":	"Password must contain at least one lowercase letter.",
-		"password_number":	"Password must contain at least one number.",
-		"password_special":	"Password must contain at least one special character.",
-		"repeatedPassword":	"Passwords do not match.",
+		"signup_first_name":		"Please enter a first name.",
+		"signup_last_name":		"Please enter a last name.",
+		"signup_email":			"Please enter a valid email address.",
+		"signup_password_length":	"Password must be at least 8 characters long.",
+		"signup_password_uppercase":	"Password must contain at least one uppercase letter.",
+		"signup_password_lowercase":	"Password must contain at least one lowercase letter.",
+		"signup_password_number":	"Password must contain at least one number.",
+		"signup_password_special":	"Password must contain at least one special character.",
+		"signup_repeated_password":	"Passwords do not match.",
+		"signup_hashing":		"Error hashing password.",
+		"signup_duplicate_email":	"This email is already used by another user.",
+		"signup_insert_user":		"Failed to create user.",
+		"db":				"Database error",
 		
-		// Info messages (empty for now, can be added later)
+		// Info messages
+		"signup_user_created":		"Account created successfuly",
 	}
 
 	if message, exists := messages[key]; exists {

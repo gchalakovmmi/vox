@@ -7,6 +7,7 @@ import (
 )
 
 type UserProfile struct {
+	ID			int
 	FirstName		string
 	LastName		string
 	Username		string
@@ -47,33 +48,33 @@ func (u *UserProfile) verifyPassword() PasswordStrength {
 
 func (u *UserProfile) ValidateSignUpInfo() string {
 	if u.FirstName == "" {
-		return "first_name"
+		return "signup_first_name"
 	}
 
 	if u.LastName == "" {
-		return "last_name"
+		return "signup_last_name"
 	}
 
 	if _, err := mail.ParseAddress(u.Email); err != nil {
-		return "email"
+		return "signup_email"
 	}
 
 	strength := u.verifyPassword()
 	switch {
 	case !strength.Length:
-		return "password_length"
+		return "signup_password_length"
 	case !strength.Upper:
-		return "password_uppercase"
+		return "signup_password_uppercase"
 	case !strength.Lower:
-		return "password_lowercase"
+		return "signup_password_lowercase"
 	case !strength.Number:
-		return "password_number"
+		return "signup_password_number"
 	case !strength.Special:
-		return "password_special"
+		return "signup_password_special"
 	}
 
 	if u.Password != u.RepeatedPassword {
-		return "repeatedPassword"
+		return "signup_repeated_password"
 	}
 
 	return ""

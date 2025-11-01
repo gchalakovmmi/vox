@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 	"log"
 	"net/http"
 	"log/slog"
@@ -16,11 +15,11 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: cfg.GetLogLevel()}))
 	slog.SetDefault(logger)
 
-	slog.Info("Environment Variables", "PORT", cfg.GetPort(), "INSTANCE_NAME", cfg.GetInstanceName(), "LOG_LEVEL", cfg.GetLogLevel())
+	slog.Info("cmd/app/main.go", "Message", "Extracted Environment Variables", "PORT", cfg.GetPort(), "INSTANCE_NAME", cfg.GetInstanceName(), "LOG_LEVEL", cfg.GetLogLevel())
 
 	srv := server.New(cfg/*, db*/, server.Routes)
 	mux := srv.CreateHandlers()
 
-	slog.Info(fmt.Sprintf("Starting HTTP server on port %s", cfg.GetPort()))
+	slog.Info("cmd/app/main.go", "Message", "Starting HTTP server", "Port", cfg.GetPort())
 	log.Fatal(http.ListenAndServe(":"+cfg.GetPort(), mux))
 }
