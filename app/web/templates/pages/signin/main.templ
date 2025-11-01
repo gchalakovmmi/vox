@@ -3,12 +3,13 @@ package signin
 import (
 	"vox/web/templates/base"
 	m "vox/internal/middleware"
+	up "vox/internal/userProfile"
 )
 
-templ sections() {
-	@panel()
+templ sections(userProfile *up.UserProfile) {
+	@panel(userProfile)
 }
 
-templ Handler(page string, title string, statusMessage m.StatusMessage) {
-	@base.Base(page, title, sections(), statusMessage)
+templ Handler(page string, title string, statusMessage m.StatusMessage, userProfile *up.UserProfile) {
+	@base.Base(page, title, sections(userProfile), statusMessage)
 }

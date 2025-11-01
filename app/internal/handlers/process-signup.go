@@ -63,7 +63,7 @@ func ProcessSignup() http.Handler {
 				}
 			}
 			slog.Debug("internal/handlers/process-signup.go", "Message", "User created succesfully", "ID", userProfile.ID)
-			queryParams.Add("info", "signup_user_created")
+			queryParams.Add("info", "signin_user_created")
 			http.Redirect(w, r, "/signin?"+queryParams.Encode(), http.StatusSeeOther)
 			return
 		})

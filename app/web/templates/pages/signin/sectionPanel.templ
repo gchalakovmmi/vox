@@ -1,17 +1,23 @@
 package signin
 
-templ panel(){
+import (
+	up "vox/internal/userProfile"
+	"net/url"
+)
+
+templ panel(userProfile *up.UserProfile){
 	<div class="row d-flex justify-content-center">
 		<div class="col-5">
 			<h1>Sign In</h1>
-			<form>
+			<form action="/process-signin" method="POST">
 				<div class="mb-3">
 					<label for="email" class="form-label">Email address</label>
-					<input type="email" class="form-control" id="email">
+					<input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={url.QueryUnescape(userProfile.Email)}>
+					<div id="emailHelp" class="form-text">you@example.com</div>
 				</div>
 				<div class="mb-3">
 					<label for="password" class="form-label">Password</label>
-					<input type="password" class="form-control" id="password">
+					<input type="password" class="form-control" name="password" id="password">
 				</div>
 				<button type="submit" class="btn btn-primary">Submit</button>
 			</form>
