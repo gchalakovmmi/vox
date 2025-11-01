@@ -3,9 +3,10 @@ package base
 import (
 	m "vox/internal/middleware"
 	up "vox/internal/userProfile"
+	up "vox/internal/userProfile"
 )
 
-templ Base(page string, title string, sections templ.Component, statMessage m.StatusMessage, userProfile *up.UserProfile) {
+templ Base(page string, title string, sections templ.Component, statMessage m.StatusMessage, userProfile up.UserProfile) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -16,7 +17,7 @@ templ Base(page string, title string, sections templ.Component, statMessage m.St
 			<link rel="stylesheet" href="https://bootstrap5.3.buldev.com/css/bootstrap.min.css">
 		</head>
 		<body class="d-flex flex-column min-vh-100">
-			@navbar(page)
+			@navbar(page, userProfile)
 			<main class="flex-grow-1">
 				@statusMessage(statMessage)
 				@sections
