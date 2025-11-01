@@ -10,3 +10,4 @@ services:
     image: vox-database
     build: ./database
     restart: unless-stopped
+    env_file: .env

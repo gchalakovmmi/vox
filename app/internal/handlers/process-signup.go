@@ -5,6 +5,9 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"vox/internal/middleware"
+	"errors"
+	"github.com/lib/pq"
 )
 
 func ProcessSignup() http.Handler {
@@ -28,13 +31,51 @@ func ProcessSignup() http.Handler {
 			return
 		}
 
-		slog.Debug("SignUp info Correct! internal/handlers/process-signup.go", "Email", userProfile.Email, "Password", userProfile.Password, "Repeated Password", userProfile.RepeatedPassword)
+		slog.Debug("internal/handlers/process-signup.go", "Message", "SignUp info Correct", "Email", userProfile.Email, "Password", userProfile.Password, "Repeated Password", userProfile.RepeatedPassword)
 
 		if userProfile.HashPassword() != nil {
-			queryParams.Add("error", "hashing")
+			queryParams.Add("error", "sighup_hashing")
 			http.Redirect(w, r, "/signup?"+queryParams.Encode(), http.StatusSeeOther)
 			return
 		}
-		slog.Debug("Hashing Successful", "Hashed Password", userProfile.HashedPassword)
+		slog.Debug("internal/handlers/process-signup.go", "Message", "Hashing Successful", "Hashed Password", userProfile.HashedPassword)
+
+		db, err := middleware.NewDB()
+		if err != nil {
+			slog.Debug("internal/handlers/process-signup.go", "Message", "Connecting to DB failed", "Error", err)
+			queryParams.Add("error", "db")
+			http.Redirect(w, r, "/signup?"+queryParams.Encode(), http.StatusSeeOther)
+			return
+		}
+
+		conn := db.Conn()
+		slog.Debug("internal/handlers/process-signup.go", "Message", "DB Connection Successful")
+		defer conn.Close()
+
+		// Insert
+		query := `
+			INSERT INTO USERS(FIRST_NAME, LAST_NAME, EMAIL, PASSWORD_HASH)
+			VALUES ($1, $2, $3, $4)
+			RETURNING ID
+		`
+		err = conn.QueryRow(query, userProfile.FirstName, userProfile.LastName, userProfile.Email, userProfile.HashedPassword).Scan(&userProfile.ID)
+		if err != nil {
+			var pqErr *pq.Error
+			if errors.As(err, &pqErr) && pqErr.Code == middleware.PGErrUniqueViolation {
+				slog.Debug("internal/handlers/process-signup.go", "Message", "User with email exists", "Error", err)
+				queryParams.Add("error", "signup_duplicate_email")
+				http.Redirect(w, r, "/signup?"+queryParams.Encode(), http.StatusSeeOther)
+				return
+			} else {
+				slog.Debug("internal/handlers/process-signup.go", "Message", "Database Error", "Error", err)
+				queryParams.Add("error", "signup_insert_user")
+				http.Redirect(w, r, "/signup?"+queryParams.Encode(), http.StatusSeeOther)
+				return
+			}
+		}
+		slog.Debug("internal/handlers/process-signup.go", "Message", "User created succesfully", "ID", userProfile.ID)
+		queryParams.Add("info", "signup_user_created")
+		http.Redirect(w, r, "/signin?"+queryParams.Encode(), http.StatusSeeOther)
+		return
 	})
 }
