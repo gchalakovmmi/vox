@@ -23,7 +23,7 @@ func ProcessSignin() http.Handler {
 			err := conn.QueryRow(`SELECT PASSWORD_HASH FROM USERS WHERE EMAIL = $1`, userProfile.Email).Scan(&userProfile.HashedPassword)
 			if err != nil {
 				slog.Debug("internal/handlers/process-signin.go", "Message", "Database Error", "Error", err)
-				queryParams.Add("error", "db")
+				queryParams.Add("error", "signin_wrong_credentials")
 				http.Redirect(w, r, "/signin?"+queryParams.Encode(), http.StatusSeeOther)
 				return
 			}
