@@ -80,15 +80,15 @@ func (u *UserProfile) ValidateSignUpInfo() string {
 	return ""
 }
 
-func (u *UserProfile) HashPassword() error{
+func (u *UserProfile) HashPassword() (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 	if err != nil {
-		return err
+		return "", err
 	}
 	u.HashedPassword = string(hash)
-	return nil
+	return u.HashedPassword, nil
 }
 
-func (u *UserProfile) ComparePasswordAndHash() error{
-	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(u.HashedPassword))
+func (u *UserProfile) CompareHashAndPassword() error{
+	return bcrypt.CompareHashAndPassword([]byte(u.HashedPassword), []byte(u.Password))
 }
