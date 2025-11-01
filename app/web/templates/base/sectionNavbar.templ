@@ -4,6 +4,11 @@ import (
 	up "vox/internal/userProfile"
 )
 
+type Link struct {
+	Endpoint	string
+	Text		string
+}
+
 templ navbar(page string, userProfile up.UserProfile) {
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
 	<div class="container-fluid">
@@ -13,7 +18,7 @@ templ navbar(page string, userProfile up.UserProfile) {
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				{{links := [...] {
+				{{links := [...] Link {
 					{"signin", "Sign In"},
 					{"signup", "Sign Up"},
 				}}}
