@@ -35,7 +35,7 @@ func ProcessSignup() http.Handler {
 
 			slog.Debug("internal/handlers/process-signup.go", "Message", "SignUp info Correct", "Email", userProfile.Email, "Password", userProfile.Password, "Repeated Password", userProfile.RepeatedPassword)
 
-			if userProfile.HashPassword() != nil {
+			if _, err := userProfile.HashPassword(); err != nil {
 				queryParams.Add("error", "sighup_hashing")
 				http.Redirect(w, r, "/signup?"+queryParams.Encode(), http.StatusSeeOther)
 				return
