@@ -5,14 +5,14 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"vox/internal/middleware"
+	"vox/internal/postgres"
 	"errors"
 	"database/sql"
 	"github.com/lib/pq"
 )
 
 func ProcessSignup() http.Handler {
-	return middleware.WithDBConn(func(conn *sql.DB) http.Handler {
+	return postgres.WithDBConn(func(conn *sql.DB) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userProfile := up.UserProfile{
 				FirstName:		r.PostFormValue("first_name"),
@@ -50,7 +50,7 @@ func ProcessSignup() http.Handler {
 			err := conn.QueryRow(query, userProfile.FirstName, userProfile.LastName, userProfile.Email, userProfile.HashedPassword).Scan(&userProfile.ID)
 			if err != nil {
 				var pqErr *pq.Error
-				if errors.As(err, &pqErr) && pqErr.Code == middleware.PGErrUniqueViolation {
+				if errors.As(err, &pqErr) && pqErr.Code == postgres.PGErrUniqueViolation {
 					slog.Debug("internal/handlers/process-signup.go", "Message", "User with email exists", "Error", err)
 					queryParams.Add("error", "signup_duplicate_email")
 					http.Redirect(w, r, "/signup?"+queryParams.Encode(), http.StatusSeeOther)

@@ -1,4 +1,4 @@
-package middleware
+package postgres
 
 import (
 	"database/sql"

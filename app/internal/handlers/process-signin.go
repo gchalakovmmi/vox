@@ -5,12 +5,12 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"vox/internal/middleware"
+	"vox/internal/postgres"
 	"database/sql"
 )
 
 func ProcessSignin() http.Handler {
-	return middleware.WithDBConn(func(conn *sql.DB) http.Handler {
+	return postgres.WithDBConn(func(conn *sql.DB) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userProfile := up.UserProfile{
 				Email:			r.PostFormValue("email"),
