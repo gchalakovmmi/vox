@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"os"
 	"fmt"
-	// "net/http"
-	// "log/slog"
 	_ "github.com/lib/pq"
+	"log/slog"
+	"net/http"
 )
 
 const (
@@ -56,4 +56,21 @@ func (db *DB) Close() error {
 		return db.conn.Close()
 	}
 	return nil
+}
+
+func WithDBConn(next func(*sql.DB) http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		db, err := NewDB()
+		if err != nil {
+			slog.Error("internal/middleware/postgres.go", "Message", "Connecting to DB failed", "Error", err)
+			http.Error(w, "Database connection failed", http.StatusInternalServerError)
+			return
+		}
+		defer db.Close()
+
+		conn := db.Conn()
+		slog.Debug("internal/middleware/postgres.go", "Message", "DB Connection Successful")
+		
+		next(conn).ServeHTTP(w, r)
+	})
 }
