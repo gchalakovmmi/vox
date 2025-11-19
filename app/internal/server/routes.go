@@ -17,4 +17,5 @@ var Routes = []Route {
 	{	"/signup",		handlers.Signup("signup", "Sign Up")	},
 	{	"/process-signup",	handlers.ProcessSignup()		},
 	{	"/home",		handlers.Home("home", "Home")		},
+	{	"/",			handlers.Home("home", "Home")		},
 }
