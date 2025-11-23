@@ -9,10 +9,11 @@ import (
 	"errors"
 	"database/sql"
 	"github.com/lib/pq"
+	"vox/internal/config"
 )
 
-func ProcessSignup() http.Handler {
-	return postgres.WithDBConn(func(conn *sql.DB) http.Handler {
+func ProcessSignup(cfg *config.Config) http.Handler {
+	return postgres.WithDBConn(cfg, func(conn *sql.DB) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userProfile := up.UserProfile{
 				FirstName:		r.PostFormValue("first_name"),
