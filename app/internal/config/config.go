@@ -4,6 +4,8 @@ import (
 	"log/slog"
 	"os"
 	"time"
+	"net/http"
+	"strings"
 )
 
 type Config struct {
@@ -24,9 +26,12 @@ type Config struct {
 	PostgresPassword	string
 	PostgresDB		string
 	PostgresHost		string
+
+	CookieSecure		bool
+	CookieSameSite		http.SameSite
 }
 
-func (c *Config) MustSet(key string, dest *string) {
+func (c *Config) Set(key string, dest *string) {
 	val := os.Getenv(key)
 	if val == "" {
 		slog.Error("internal/config/config.go", "Message", "Required env var missing", "var", key)
@@ -35,7 +40,7 @@ func (c *Config) MustSet(key string, dest *string) {
 	*dest = val
 }
 
-func (c *Config) MustSetDuration(key string, dest *time.Duration) {
+func (c *Config) SetDuration(key string, dest *time.Duration) {
 	str := os.Getenv(key)
 	if str == "" {
 		slog.Error("internal/config/config.go", "Message", "Required env var missing", "var", key)
@@ -47,30 +52,6 @@ func (c *Config) MustSetDuration(key string, dest *time.Duration) {
 		os.Exit(1)
 	}
 	*dest = d
-}
-
-func New() *Config {
-	c := &Config{}
-
-	c.MustSet("PORT", &c.Port)
-	c.MustSet("INSTANCE_NAME", &c.InstanceName)
-	c.SetLogLevel()
-
-	c.MustSet("ACCESS_TOKEN_SECRET", &c.AccessTokenSecret)
-	c.MustSet("REFRESH_TOKEN_SECRET", &c.RefreshTokenSecret)
-	c.MustSet("EMAIL_LOGIN_ENCRYPT_KEY", &c.EmailLoginEncryptKey)
-	c.MustSetDuration("ACCESS_TOKEN_TTL", &c.AccessTokenTTL)
-	c.MustSetDuration("REFRESH_TOKEN_TTL", &c.RefreshTokenTTL)
-
-	c.MustSet("REDIS_ADDRESS", &c.RedisAddress)
-	c.MustSet("REDIS_PASSWORD", &c.RedisPassword)
-
-	c.MustSet("POSTGRES_USER", &c.PostgresUser)
-	c.MustSet("POSTGRES_PASSWORD", &c.PostgresPassword)
-	c.MustSet("POSTGRES_DB", &c.PostgresDB)
-	c.MustSet("POSTGRES_HOST", &c.PostgresHost)
-
-	return c
 }
 
 func (c *Config) SetLogLevel() {
@@ -93,6 +74,34 @@ func (c *Config) SetLogLevel() {
 	}
 }
 
+func (c *Config) SetBool(key string, dest *bool) {
+    val := strings.TrimSpace(os.Getenv(key))
+    switch strings.ToLower(val) {
+    case "true":
+        *dest = true
+    case "false":
+        *dest = false
+    default:
+        slog.Error("internal/config/config.go", "Message", "env var must be set to either true or false", "var", key)
+        os.Exit(1)
+    }
+}
+
+func (c *Config) SetCookieSameSite() {
+    val := strings.TrimSpace(strings.ToLower(os.Getenv("COOKIE_SAME_SITE")))
+    switch val {
+    case "lax":
+        c.CookieSameSite = http.SameSiteLaxMode
+    case "strict":
+        c.CookieSameSite = http.SameSiteStrictMode
+    case "none":
+        c.CookieSameSite = http.SameSiteNoneMode
+    default:
+        slog.Error("internal/config/config.go", "Message", "COOKIE_SAME_SITE must be lax, strict or none")
+        os.Exit(1)
+    }
+}
+
 func (c *Config) GetPort() string			{ return c.Port }
 func (c *Config) GetInstanceName() string		{ return c.InstanceName }
 func (c *Config) GetLogLevel() slog.Level		{ return c.LogLevel }
@@ -107,3 +116,30 @@ func (c *Config) GetPostgresUser() string		{ return c.PostgresUser }
 func (c *Config) GetPostgresPassword() string		{ return c.PostgresPassword }
 func (c *Config) GetPostgresDB() string			{ return c.PostgresDB }
 func (c *Config) GetPostgresHost() string		{ return c.PostgresHost }
+
+func New() *Config {
+	c := &Config{}
+
+	c.Set("PORT", &c.Port)
+	c.Set("INSTANCE_NAME", &c.InstanceName)
+	c.SetLogLevel()
+
+	c.Set("ACCESS_TOKEN_SECRET", &c.AccessTokenSecret)
+	c.Set("REFRESH_TOKEN_SECRET", &c.RefreshTokenSecret)
+	c.Set("EMAIL_LOGIN_ENCRYPT_KEY", &c.EmailLoginEncryptKey)
+	c.SetDuration("ACCESS_TOKEN_TTL", &c.AccessTokenTTL)
+	c.SetDuration("REFRESH_TOKEN_TTL", &c.RefreshTokenTTL)
+
+	c.Set("REDIS_ADDRESS", &c.RedisAddress)
+	c.Set("REDIS_PASSWORD", &c.RedisPassword)
+
+	c.Set("POSTGRES_USER", &c.PostgresUser)
+	c.Set("POSTGRES_PASSWORD", &c.PostgresPassword)
+	c.Set("POSTGRES_DB", &c.PostgresDB)
+	c.Set("POSTGRES_HOST", &c.PostgresHost)
+
+	c.SetCookieSameSite()
+	c.SetBool("COOKIE_SECURE", &c.CookieSecure)
+
+	return c
+}
