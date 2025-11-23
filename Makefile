@@ -6,7 +6,7 @@ DOMAIN := vox.buldev.com
 LINUX_USER := gchalakov
 SSH_KEY := ~/.ssh/ChaluSRV
 
-.PHONY: clear app app-logs database database-logs all up down restart
+.PHONY: clear app app-logs database database-logs redis redis-logs redis-connect all up down restart
 
 clear:
 	@clear
@@ -42,7 +42,18 @@ database-connect:
 		-U $$(grep 'POSTGRES_USER' .env | cut -d '=' -f2 | cut -c 2- | rev | cut -c 2- | rev) \
 		-d $$(grep 'POSTGRES_DB' .env | cut -d '=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
 
-all: app database
+redis:
+	@echo "=== Redis ==="
+	@echo "Building image..."
+	@docker compose up -d --build redis
+
+redis-logs:
+	@docker logs --follow $(NAME)-redis-1
+
+redis-connect:
+	@docker exec -it $(NAME)-redis-1 redis-cli
+
+all: app database redis
 
 up:
 	docker compose up -d
