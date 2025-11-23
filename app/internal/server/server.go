@@ -2,42 +2,43 @@ package server
 
 import (
 	"net/http"
-	"vox/internal/config"
-	"vox/internal/handlers"
-	"database/sql"
+
 	"github.com/redis/go-redis/v9"
 	"vox/internal/auth"
+	"vox/internal/config"
+	"vox/internal/handlers"
 )
 
 type Server struct {
-	config	*config.Config
-	db     *sql.DB
-	rdb    *redis.Client
+	cfg	*config.Config
+	rdb	*redis.Client
 }
 
-type Route struct {
-	Endpoint	string
-	Handler		http.Handler
+func New(cfg *config.Config, rdb *redis.Client) *Server {
+	return &Server{cfg: cfg, rdb: rdb}
 }
 
-func New(cfg *config.Config, db *sql.DB, rdb *redis.Client) *Server {
-    return &Server{config: cfg, db: db, rdb: rdb}
-}
-
-func (srv *Server) CreateHandlers() http.Handler {
+func (s *Server) CreateHandlers() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.Handle("/web/static/", http.StripPrefix("/web/static/", http.FileServer(http.Dir("./web/static/"))))
+	// static
+	mux.Handle("/web/static/",	http.StripPrefix("/web/static/", http.FileServer(http.Dir("./web/static"))))
 
+	// public
 	mux.Handle("/health",		handlers.Health())
-	mux.Handle("/signin",		handlers.Signin("signin", "Sign In"))
-	mux.Handle("/process-signin",	handlers.ProcessSignin(srv.config))
-	mux.Handle("/signup",		handlers.Signup("signup", "Sign Up"))
-	mux.Handle("/process-signup",	handlers.ProcessSignup(srv.config))
-	mux.Handle("/home",		auth.MiddlewareAccessToken(srv.rdb)(handlers.Home("home", "Home")))
+	mux.Handle("/signin",		auth.WithoutAuthentication(s.cfg, handlers.Signin("signin", "Sign In")))
+	mux.Handle("/process-signin",	handlers.ProcessSignin(s.cfg, s.rdb))
+	mux.Handle("/signup",		auth.WithoutAuthentication(s.cfg, handlers.Signup("signup", "Sign Up")))
 
-	auth.RegisterAuthRoutes(mux, srv.db, srv.rdb)
-	mux.Handle("/auth/", http.StripPrefix("/auth", mux))
+	mux.Handle("/process-signup",	handlers.ProcessSignup(s.cfg))
+
+	// auth
+	mux.Handle("/auth/refresh",	auth.TokenRefreshHandler(s.cfg, s.rdb))
+
+	// protected
+	mux.Handle("/home", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
+		handlers.Home("home", "Home").ServeHTTP(w, r)
+	}))
 
 	mux.Handle("/",			handlers.Home("home", "Home"))
 
