@@ -8,7 +8,7 @@ services:
       - 8080:8080
     networks:
       - vox_net
-      - net
+      # - net
   database:
     image: vox-database
     build: ./database
