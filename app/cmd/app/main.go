@@ -1,11 +1,13 @@
 package main
 
 import (
-	"os"
 	"log"
-	"net/http"
 	"log/slog"
+	"net/http"
+	"os"
+
 	"vox/internal/config"
+	"vox/internal/redis"
 	"vox/internal/server"
 )
 
@@ -15,11 +17,10 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: cfg.GetLogLevel()}))
 	slog.SetDefault(logger)
 
-	slog.Info("cmd/app/main.go", "Message", "Extracted Environment Variables", "PORT", cfg.GetPort(), "INSTANCE_NAME", cfg.GetInstanceName(), "LOG_LEVEL", cfg.GetLogLevel())
-
-	srv := server.New(cfg/*, db*/, server.Routes)
+	rdb := redis.Init(cfg)
+	srv := server.New(cfg, rdb)
 	mux := srv.CreateHandlers()
 
-	slog.Info("cmd/app/main.go", "Message", "Starting HTTP server", "Port", cfg.GetPort())
+	slog.Info("cmd/app/main.go", "Message", "Starting server", "port", cfg.GetPort(), "instance", cfg.GetInstanceName())
 	log.Fatal(http.ListenAndServe(":"+cfg.GetPort(), mux))
 }
