@@ -6,8 +6,27 @@ services:
     env_file: .env
     ports: 
       - 8080:8080
+    networks:
+      - vox_net
+      - net
   database:
     image: vox-database
     build: ./database
     restart: unless-stopped
     env_file: .env
+    networks:
+      - vox_net
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    env_file: .env
+    # ports:
+    #   - 6379:6379
+    networks:
+      - vox_net
+networks:
+  vox_net:
+    external: false
+  # net:
+  #   external: true
