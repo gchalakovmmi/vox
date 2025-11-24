@@ -9,31 +9,32 @@ import (
 )
 
 type Config struct {
-	Port			string
-	InstanceName		string
-	LogLevel		slog.Level
+	Port				string
+	InstanceName			string
+	LogLevel			slog.Level
 
-	AccessTokenSecret	string
-	RefreshTokenSecret	string
-	EmailLoginEncryptKey	string
-	AccessTokenTTL		time.Duration
-	RefreshTokenTTL		time.Duration
+	AccessTokenSecret		string
+	RefreshTokenSecret		string
+	EmailLoginEncryptKey		string
+	AccessTokenTTL			time.Duration
+	RefreshTokenTTL			time.Duration
 
-	RedisAddress		string
-	RedisPassword		string
+	RedisAddress			string
+	RedisPassword			string
 
-	PostgresUser		string
-	PostgresPassword	string
-	PostgresDB		string
-	PostgresHost		string
+	PostgresUser			string
+	PostgresPassword		string
+	PostgresDB			string
+	PostgresHost			string
 
-	CookieSecure		bool
-	CookieSameSite		http.SameSite
+	CookieSecure			bool
+	CookieSameSite			http.SameSite
 
-	TTSOpenAIURL		string
-	TTSOpenAIModel		string
-	TTSOpenAIVoice		string
-	TTSOpenAIKey		string
+	TTSOpenAIURL			string
+	TTSOpenAIModel			string
+	TTSOpenAIVoice			string
+	TTSOpenAIKey			string
+	ConversationDefaultGreeting	string
 }
 
 func (c *Config) Set(key string, dest *string) {
@@ -106,24 +107,25 @@ func (c *Config) SetCookieSameSite() {
 	}
 }
 
-func (c *Config) GetPort()			string		{ return c.Port }
-func (c *Config) GetInstanceName()		string		{ return c.InstanceName }
-func (c *Config) GetLogLevel()			slog.Level	{ return c.LogLevel }
-func (c *Config) GetAccessTokenSecret()		string		{ return c.AccessTokenSecret }
-func (c *Config) GetRefreshTokenSecret()	string		{ return c.RefreshTokenSecret }
-func (c *Config) GetEmailLoginEncryptKey()	string		{ return c.EmailLoginEncryptKey }
-func (c *Config) GetAccessTokenTTL()		time.Duration	{ return c.AccessTokenTTL }
-func (c *Config) GetRefreshTokenTTL()		time.Duration	{ return c.RefreshTokenTTL }
-func (c *Config) GetRedisAddress()		string		{ return c.RedisAddress }
-func (c *Config) GetRedisPassword()		string		{ return c.RedisPassword }
-func (c *Config) GetPostgresUser()		string		{ return c.PostgresUser }
-func (c *Config) GetPostgresPassword()		string		{ return c.PostgresPassword }
-func (c *Config) GetPostgresDB()		string		{ return c.PostgresDB }
-func (c *Config) GetPostgresHost()		string		{ return c.PostgresHost }
-func (c *Config) GetTTSOpenAIURL()		string   	{ return c.TTSOpenAIURL }
-func (c *Config) GetTTSOpenAIModel()		string		{ return c.TTSOpenAIModel }
-func (c *Config) GetTTSOpenAIVoice()		string		{ return c.TTSOpenAIVoice }
-func (c *Config) GetTTSOpenAIKey()		string		{ return c.TTSOpenAIKey }
+func (c *Config) GetPort()				string		{ return c.Port }
+func (c *Config) GetInstanceName()			string		{ return c.InstanceName }
+func (c *Config) GetLogLevel()				slog.Level	{ return c.LogLevel }
+func (c *Config) GetAccessTokenSecret()			string		{ return c.AccessTokenSecret }
+func (c *Config) GetRefreshTokenSecret()		string		{ return c.RefreshTokenSecret }
+func (c *Config) GetEmailLoginEncryptKey()		string		{ return c.EmailLoginEncryptKey }
+func (c *Config) GetAccessTokenTTL()			time.Duration	{ return c.AccessTokenTTL }
+func (c *Config) GetRefreshTokenTTL()			time.Duration	{ return c.RefreshTokenTTL }
+func (c *Config) GetRedisAddress()			string		{ return c.RedisAddress }
+func (c *Config) GetRedisPassword()			string		{ return c.RedisPassword }
+func (c *Config) GetPostgresUser()			string		{ return c.PostgresUser }
+func (c *Config) GetPostgresPassword()			string		{ return c.PostgresPassword }
+func (c *Config) GetPostgresDB()			string		{ return c.PostgresDB }
+func (c *Config) GetPostgresHost()			string		{ return c.PostgresHost }
+func (c *Config) GetTTSOpenAIURL()			string   	{ return c.TTSOpenAIURL }
+func (c *Config) GetTTSOpenAIModel()			string		{ return c.TTSOpenAIModel }
+func (c *Config) GetTTSOpenAIVoice()			string		{ return c.TTSOpenAIVoice }
+func (c *Config) GetTTSOpenAIKey()			string		{ return c.TTSOpenAIKey }
+func (c *Config) GetConversationDefaultGreeting()	string		{ return c.TTSOpenAIKey }
 
 func New() *Config {
 	c := &Config{}
@@ -153,6 +155,8 @@ func New() *Config {
 	c.Set("TTS_OPENAI_MODEL_NAME", &c.TTSOpenAIModel)
 	c.Set("TTS_OPENAI_VOICE", &c.TTSOpenAIVoice)
 	c.Set("TTS_OPENAI_API_KEY", &c.TTSOpenAIKey)
+
+	c.Set("CONVERSATION_DEFAULT_GREETING", &c.ConversationDefaultGreeting)
 
 	return c
 }
