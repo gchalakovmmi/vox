@@ -6,10 +6,19 @@ import (
 	up "vox/internal/userProfile"
 )
 
+
+
+templ styles() {
+}
+
+templ scripts() {
+<script src="/web/static/scripts/conversation.js"></script>
+}
+
 templ sections(userProfile *up.UserProfile) {
 	@panel(userProfile)
 }
 
 templ Handler(page string, title string, statusMessage sm.StatusMessage, userProfile *up.UserProfile) {
-	@base.Base(page, title, sections(userProfile), statusMessage, userProfile)
+	@base.Base(page, title, styles(), scripts(), sections(userProfile), statusMessage, userProfile)
 }
