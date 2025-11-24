@@ -33,7 +33,16 @@ type Config struct {
 	TTSOpenAIURL			string
 	TTSOpenAIModel			string
 	TTSOpenAIVoice			string
-	TTSOpenAIKey			string
+	TTSOpenAIAPIKey			string
+
+	STTOpenAIURL			string
+	STTOpenAIAPIKey			string
+	STTOpenAIModelName		string
+
+	LLMOpenAIURL			string
+	LLMOpenAIAPIKey 		string
+	LLMOpenAIModelName		string
+
 	ConversationDefaultGreeting	string
 }
 
@@ -110,22 +119,34 @@ func (c *Config) SetCookieSameSite() {
 func (c *Config) GetPort()				string		{ return c.Port }
 func (c *Config) GetInstanceName()			string		{ return c.InstanceName }
 func (c *Config) GetLogLevel()				slog.Level	{ return c.LogLevel }
+
 func (c *Config) GetAccessTokenSecret()			string		{ return c.AccessTokenSecret }
 func (c *Config) GetRefreshTokenSecret()		string		{ return c.RefreshTokenSecret }
 func (c *Config) GetEmailLoginEncryptKey()		string		{ return c.EmailLoginEncryptKey }
 func (c *Config) GetAccessTokenTTL()			time.Duration	{ return c.AccessTokenTTL }
 func (c *Config) GetRefreshTokenTTL()			time.Duration	{ return c.RefreshTokenTTL }
+
 func (c *Config) GetRedisAddress()			string		{ return c.RedisAddress }
 func (c *Config) GetRedisPassword()			string		{ return c.RedisPassword }
+
 func (c *Config) GetPostgresUser()			string		{ return c.PostgresUser }
 func (c *Config) GetPostgresPassword()			string		{ return c.PostgresPassword }
 func (c *Config) GetPostgresDB()			string		{ return c.PostgresDB }
 func (c *Config) GetPostgresHost()			string		{ return c.PostgresHost }
+
 func (c *Config) GetTTSOpenAIURL()			string   	{ return c.TTSOpenAIURL }
 func (c *Config) GetTTSOpenAIModel()			string		{ return c.TTSOpenAIModel }
 func (c *Config) GetTTSOpenAIVoice()			string		{ return c.TTSOpenAIVoice }
-func (c *Config) GetTTSOpenAIKey()			string		{ return c.TTSOpenAIKey }
+func (c *Config) GetTTSOpenAIAPIKey()			string		{ return c.TTSOpenAIAPIKey }
 func (c *Config) GetConversationDefaultGreeting()	string		{ return c.ConversationDefaultGreeting}
+
+func (c *Config) GetSTTOpenAIURL()			string		{ return c.STTOpenAIURL }
+func (c *Config) GetSTTOpenAIAPIKey()			string		{ return c.STTOpenAIAPIKey }
+func (c *Config) GetSTTOpenAIModelName()		string		{ return c.STTOpenAIModelName }
+
+func (c *Config) GetLLMOpenAIURL()			string		{ return c.LLMOpenAIURL }
+func (c *Config) GetLLMOpenAIAPIKey()			string		{ return c.LLMOpenAIAPIKey }
+func (c *Config) GetLLMOpenAIModelName()		string		{ return c.LLMOpenAIModelName }
 
 func New() *Config {
 	c := &Config{}
@@ -154,7 +175,15 @@ func New() *Config {
 	c.Set("TTS_OPENAI_URL", &c.TTSOpenAIURL)
 	c.Set("TTS_OPENAI_MODEL_NAME", &c.TTSOpenAIModel)
 	c.Set("TTS_OPENAI_VOICE", &c.TTSOpenAIVoice)
-	c.Set("TTS_OPENAI_API_KEY", &c.TTSOpenAIKey)
+	c.Set("TTS_OPENAI_API_KEY", &c.TTSOpenAIAPIKey)
+
+	c.Set("STT_OPENAI_URL", &c.STTOpenAIURL)
+	c.Set("STT_OPENAI_API_KEY", &c.STTOpenAIAPIKey)
+	c.Set("STT_OPENAI_MODEL_NAME", &c.STTOpenAIModelName)
+
+	c.Set("LLM_OPENAI_URL", &c.LLMOpenAIURL)
+	c.Set("LLM_OPENAI_API_KEY", &c.LLMOpenAIAPIKey)
+	c.Set("LLM_OPENAI_MODEL_NAME", &c.LLMOpenAIModelName)
 
 	c.Set("CONVERSATION_DEFAULT_GREETING", &c.ConversationDefaultGreeting)
 
