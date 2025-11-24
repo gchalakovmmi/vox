@@ -18,15 +18,11 @@ app:
 	@echo "Building image..."
 	@docker compose up -d --build app
 
-push: app database
-	@echo "=== Push ==="
-	@docker tag $(IMAGE) $(DREG)/$(IMAGE):latest
-	@docker push $(DREG)/$(APP_IMAGE):latest
-	@docker push $(DREG)/$(DATABASE_IMAGE):latest
-	@ssh -i $(SSH_KEY) $(LINUX_USER)@$(DOMAIN)
-
 app-logs:
 	@docker logs --follow $(NAME)-app-1
+
+app-connect:
+	@docker exec -it $(NAME)-app-1 sh
 
 database:
 	@echo "=== Database ==="
@@ -54,6 +50,13 @@ redis-connect:
 	@docker exec -it $(NAME)-redis-1 redis-cli
 
 all: app database redis
+
+push: all
+	@echo "=== Push ==="
+	@docker tag $(IMAGE) $(DREG)/$(IMAGE):latest
+	@docker push $(DREG)/$(APP_IMAGE):latest
+	@docker push $(DREG)/$(DATABASE_IMAGE):latest
+	@ssh -i $(SSH_KEY) $(LINUX_USER)@$(DOMAIN)
 
 up:
 	docker compose up -d
