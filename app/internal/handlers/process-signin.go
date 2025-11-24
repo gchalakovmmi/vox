@@ -28,7 +28,7 @@ func ProcessSignin(cfg *config.Config, rdb *redis.Client) http.Handler {
 
 			if err := conn.QueryRow(`SELECT id, password_hash FROM users WHERE email=$1`, userProfile.Email).
 				Scan(&userProfile.ID, &userProfile.HashedPassword); err != nil {
-				slog.Debug("internal/handlers/process-signin.go" "Message", "Could not execute DB query", "error", err)
+				slog.Debug("internal/handlers/process-signin.go", "Message", "Could not execute DB query", "error", err)
 				queryParams.Add("error", "signin_wrong_credentials")
 				http.Redirect(w, r, "/signin?"+queryParams.Encode(), http.StatusSeeOther)
 				return
