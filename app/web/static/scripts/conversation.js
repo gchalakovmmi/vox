@@ -1,56 +1,130 @@
-const p = document.getElementById('info');
-const chatDiv = document.getElementById('chat');   // <--- history container
-let isFirstSpacePress = true;
-let isSpacePressed = false;
+/* conversation.js -------------------------------------------------- */
+const infoP	 = document.getElementById('info');
+const chatDiv = document.getElementById('chat');
 
-document.addEventListener('keydown', async function(event) {
-	if (event.code === 'Space' && !isSpacePressed) {
-		event.preventDefault();
-		isSpacePressed = true;
+/* state ----------------------------------------------------------- */
+const STATE = {
+	IDLE:		'idle',		// waiting for user
+	PLAYING:	'playing',	// greeting / VOX audio is playing
+	RECORDING:	'recording',	// mic on
+	UPLOADING:	'uploading'	// waiting for back-end
+};
+let state = STATE.IDLE;
+let mediaRecorder= null;
+let audioChunks	= [];
+let recordStart	= 0;			// performance.now()
+let audioPlayer = null;			// current HTMLAudioElement
 
-		if (isFirstSpacePress) {
-			isFirstSpacePress = false;
-			p.textContent = 'VOX Speaking...';
+/* helpers --------------------------------------------------------- */
+function addChat(sender, text){
+	const p = document.createElement('p');
+	p.textContent = `${sender}: ${text}`;
+	chatDiv.appendChild(p);
+	chatDiv.scrollTop = chatDiv.scrollHeight;
+}
+function setInfo(txt){ infoP.textContent = txt; }
 
-			const rsp = await fetch('/conversation/reply', {
-				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({messages: []})
-			});
-			if (!rsp.ok) { console.error(await rsp.text()); return; }
-			const data = await rsp.json();
+/* audio playback -------------------------------------------------- */
+async function playAudio(url){
+	state = STATE.PLAYING;
+	setInfo('VOX is speaking…');
+	audioPlayer = new Audio(url);
+	audioPlayer.play();
+	return new Promise(res => {
+		audioPlayer.onended	= () => res();
+		audioPlayer.onerror	= () => res(); // treat error as ended
+	});
+}
 
-			// add text to history
-			const para = document.createElement('p');
-			para.textContent = 'VOX: ' + data.text;
-			chatDiv.appendChild(para);
+/* initial greeting on first space --------------------------------- */
+let firstGreetingDone = false;
+document.addEventListener('keydown', async e => {
+	if (e.code !== 'Space' || e.repeat) return;
+	e.preventDefault();
 
-			// play audio
-			const audioRsp = await fetch(data.audioUrl);
-			if (!audioRsp.ok) { console.error(await audioRsp.text()); return; }
-			const blob = await audioRsp.blob();
-			const url = URL.createObjectURL(blob);
-			const audio = new Audio(url);
-			audio.play();
-			audio.addEventListener('ended', () => URL.revokeObjectURL(url), {once: true});
-		} else {
-			p.textContent = 'Listening... Release to stop';
-			// TODO: start recording
+	if (state === STATE.IDLE && !firstGreetingDone){
+		firstGreetingDone = true;
+		const rsp = await fetch('/conversation/greeting', {
+			method: 'POST',
+			headers: {'Content-Type':'application/json'},
+			body: JSON.stringify({messages:[]})
+		});
+		if (!rsp.ok){ console.error(await rsp.text()); return; }
+		const data = await rsp.json();
+		addChat('VOX', data.text);
+		await playAudio(data.audioUrl);
+		state = STATE.IDLE;
+		setInfo('Hold space to answer…');
+		return;
+	}
+
+	if (state !== STATE.IDLE) return;		// ignore while playing/uploading
+	startRecording();
+});
+
+document.addEventListener('keyup', e => {
+	if (e.code !== 'Space') return;
+	e.preventDefault();
+	if (state === STATE.RECORDING) stopRecording();
+});
+
+/* recording ------------------------------------------------------- */
+async function startRecording(){
+	audioChunks = [];
+	const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+	mediaRecorder = new MediaRecorder(stream);
+	mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+	mediaRecorder.onstop = () => stream.getTracks().forEach(t => t.stop());
+	mediaRecorder.start();
+	recordStart = performance.now();
+	state = STATE.RECORDING;
+	setInfo('Recording… release to stop');
+}
+
+function stopRecording(){
+	mediaRecorder.stop();
+	state = STATE.UPLOADING;
+	setInfo('Processing…');
+	mediaRecorder.onstop = async () => {
+		const blob = new Blob(audioChunks, {type:'audio/webm'});
+		const duration = (performance.now() - recordStart)/1000;
+
+		if (duration < 1){
+			setInfo('Too short – hold the key while you speak');
+			state = STATE.IDLE;
+			return;
 		}
-	}
-});
+		await uploadAudio(blob);
+	};
+}
 
-document.addEventListener('keyup', function(event) {
-	if (event.code === 'Space') {
-		event.preventDefault();
-		isSpacePressed = false;
-		p.textContent = 'Press and hold the spacebar to start speaking';
-		// TODO: stop recording
-		// TODO: send audio + history to /conversation/reply
-		// TODO: add user/VOX paragraphs to chatDiv
+/* upload ---------------------------------------------------------- */
+async function uploadAudio(blob){
+	const fd = new FormData();
+	fd.append('audio', blob, 'recording.webm');
+	const rsp = await fetch('/conversation/prompt', {
+		method: 'POST',
+		headers: {'Authorization':'Bearer '+getAccessToken()},
+		body: fd
+	});
+	if (!rsp.ok){
+		const msg = await rsp.text();
+		setInfo(msg);
+		state = STATE.IDLE;
+		return;
 	}
-});
+	const data = await rsp.json();
+	addChat('You', data.user);
+	addChat('VOX', data.vox);
+	await playAudio(data.audioUrl);
+	state = STATE.IDLE;
+	setInfo('Hold space to answer…');
+}
 
-window.addEventListener('keydown', e => {
-	if (e.code === 'Space' && e.target === document.body) e.preventDefault();
-});
+/* tiny helper to read the access-token cookie ------------------- */
+function getAccessToken(){
+	return document.cookie
+		.split('; ')
+		.find(row => row.startsWith('access_token='))
+		?.split('=')[1] || '';
+}

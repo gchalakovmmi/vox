@@ -1,4 +1,4 @@
-package tts
+package ai
 
 import (
 	"context"
@@ -9,21 +9,20 @@ import (
 	"github.com/openai/openai-go/v3/option"
 )
 
+// Synthesize returns MP3 bytes for the given text.
 func Synthesize(ctx context.Context, text, baseURL, model, voice, key string) ([]byte, error) {
-	client := openai.NewClient(
+	cli := openai.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey(key),
 	)
-
-	resp, err := client.Audio.Speech.New(ctx, openai.AudioSpeechNewParams{
+	resp, err := cli.Audio.Speech.New(ctx, openai.AudioSpeechNewParams{
 		Model: openai.SpeechModel(model),
 		Voice: openai.AudioSpeechNewParamsVoice(voice),
 		Input: text,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("tts request failed: %w", err)
+		return nil, fmt.Errorf("tts request: %w", err)
 	}
 	defer resp.Body.Close()
-
 	return io.ReadAll(resp.Body)
 }

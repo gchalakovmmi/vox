@@ -2,11 +2,13 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"vox/internal/auth"
 	"vox/internal/config"
 	"vox/internal/handlers"
+	"vox/internal/ai"
 )
 
 type Server struct {
@@ -39,16 +41,25 @@ func (s *Server) CreateHandlers() http.Handler {
 	mux.Handle("/home", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
 		handlers.Home("home", "Home").ServeHTTP(w, r)
 	}))
-	mux.Handle("/conversation", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
-		handlers.Conversation("conversation", "Conversation").ServeHTTP(w, r)
+	mux.Handle("/conversation", auth.RequireAccessToken(s.cfg, s.rdb, 
+		func(w http.ResponseWriter, r *http.Request, uid uint) {
+			handlers.Conversation("conversation", "Conversation").ServeHTTP(w, r)
 	}))
-	mux.Handle("/conversation/reply", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
-		handlers.ConversationReply(s.cfg).ServeHTTP(w, r)
+	audioStore := ai.NewAudioStore(60 * time.Second)
+
+	mux.Handle("/conversation/greeting", auth.RequireAccessToken(s.cfg, s.rdb,
+		func(w http.ResponseWriter, r *http.Request, uid uint) {
+			handlers.PostConversationGreeting(s.cfg, audioStore).ServeHTTP(w, r)
 	}))
-	mux.Handle("/conversation/tts", auth.RequireAccessToken(s.cfg, s.rdb,
-	func(w http.ResponseWriter, r *http.Request, uid uint) {
-		handlers.ConversationTTS().ServeHTTP(w, r)
+	mux.Handle("/conversation/prompt", auth.RequireAccessToken(s.cfg, s.rdb,
+		func(w http.ResponseWriter, r *http.Request, uid uint) {
+			handlers.PostConversationPrompt(s.cfg, s.rdb, audioStore).ServeHTTP(w, r)
 	}))
+	mux.Handle("/conversation/audio", auth.RequireAccessToken(s.cfg, s.rdb,
+		func(w http.ResponseWriter, r *http.Request, uid uint) {
+			handlers.ConversationAudioTokenHandler(audioStore).ServeHTTP(w, r)
+	}))
+
 
 	mux.Handle("/",			handlers.Home("home", "Home"))
 
