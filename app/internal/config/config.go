@@ -125,7 +125,7 @@ func (c *Config) GetTTSOpenAIURL()			string   	{ return c.TTSOpenAIURL }
 func (c *Config) GetTTSOpenAIModel()			string		{ return c.TTSOpenAIModel }
 func (c *Config) GetTTSOpenAIVoice()			string		{ return c.TTSOpenAIVoice }
 func (c *Config) GetTTSOpenAIKey()			string		{ return c.TTSOpenAIKey }
-func (c *Config) GetConversationDefaultGreeting()	string		{ return c.TTSOpenAIKey }
+func (c *Config) GetConversationDefaultGreeting()	string		{ return c.ConversationDefaultGreeting}
 
 func New() *Config {
 	c := &Config{}
