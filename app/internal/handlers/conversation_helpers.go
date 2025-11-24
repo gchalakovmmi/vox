@@ -52,7 +52,7 @@ func ConversationReply(cfg *config.Config) http.Handler {
 			cfg.GetTTSOpenAIURL(),
 			cfg.GetTTSOpenAIModel(),
 			cfg.GetTTSOpenAIVoice(),
-			cfg.GetTTSOpenAIKey(),
+			cfg.GetTTSOpenAIAPIKey(),
 		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
