@@ -39,6 +39,9 @@ func (s *Server) CreateHandlers() http.Handler {
 	mux.Handle("/home", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
 		handlers.Home("home", "Home").ServeHTTP(w, r)
 	}))
+	mux.Handle("/conversation", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
+		handlers.Conversation("conversation", "Conversation").ServeHTTP(w, r)
+	}))
 
 	mux.Handle("/",			handlers.Home("home", "Home"))
 
