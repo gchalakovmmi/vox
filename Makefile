@@ -6,7 +6,7 @@ DOMAIN := vox.buldev.com
 LINUX_USER := gchalakov
 SSH_KEY := ~/.ssh/ChaluSRV
 
-.PHONY: clear app app-logs database database-logs redis redis-logs redis-connect all up down restart
+.PHONY: clear app app-logs database database-logs database-clear redis redis-logs redis-connect all up down restart
 
 clear:
 	@clear
@@ -37,6 +37,9 @@ database-connect:
 		-h localhost \
 		-U $$(grep 'POSTGRES_USER' .env | cut -d '=' -f2 | cut -c 2- | rev | cut -c 2- | rev) \
 		-d $$(grep 'POSTGRES_DB' .env | cut -d '=' -f2 | cut -c 2- | rev | cut -c 2- | rev)
+database-clear:
+	docker compose down database
+	docker volume rm $(NAME)_database || true
 
 redis:
 	@echo "=== Redis ==="

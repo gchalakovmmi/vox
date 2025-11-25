@@ -14,6 +14,8 @@ services:
     build: ./database
     restart: unless-stopped
     env_file: .env
+    volumes:
+      - database:/var/lib/postgresql/data
     networks:
       - vox_net
   redis:
@@ -30,3 +32,6 @@ networks:
     external: false
   net:
     external: true
+
+volumes:
+  database:
