@@ -60,8 +60,10 @@ func (s *Server) CreateHandlers() http.Handler {
 			handlers.ConversationAudioTokenHandler(audioStore).ServeHTTP(w, r)
 	}))
 
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/signin", http.StatusSeeOther)
+	}))
 
-	mux.Handle("/",			handlers.Home("home", "Home"))
 
 	return mux
 }
