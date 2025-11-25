@@ -14,8 +14,7 @@ type greetingRsp struct {
 	AudioURL	string `json:"audioUrl"`
 }
 
-// PostConversationGreeting  POST /conversation/greeting  (no body required)
-func PostConversationGreeting(cfg *config.Config, store *ai.AudioStore) http.Handler {
+func ConversationGreeting(cfg *config.Config, store *ai.AudioStore) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		text := cfg.GetConversationDefaultGreeting()
 

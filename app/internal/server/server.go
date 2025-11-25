@@ -49,11 +49,11 @@ func (s *Server) CreateHandlers() http.Handler {
 
 	mux.Handle("/conversation/greeting", auth.RequireAccessToken(s.cfg, s.rdb,
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-			handlers.PostConversationGreeting(s.cfg, audioStore).ServeHTTP(w, r)
+			handlers.ConversationGreeting(s.cfg, audioStore).ServeHTTP(w, r)
 	}))
 	mux.Handle("/conversation/prompt", auth.RequireAccessToken(s.cfg, s.rdb,
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-			handlers.PostConversationPrompt(s.cfg, s.rdb, audioStore).ServeHTTP(w, r)
+			handlers.ConversationPrompt(s.cfg, audioStore, uid).ServeHTTP(w, r)
 	}))
 	mux.Handle("/conversation/audio", auth.RequireAccessToken(s.cfg, s.rdb,
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
