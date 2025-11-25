@@ -8,12 +8,15 @@ import (
 	"vox/internal/ai"
 	"vox/internal/config"
 	"vox/internal/postgres"
+	"strconv"
+	"log/slog"
 )
 
 type promptRsp struct {
-	User	 string `json:"user"`
-	Vox	  string `json:"vox"`
-	AudioURL string `json:"audioUrl"`
+	User		string	`json:"user"`
+	Vox		string	`json:"vox"`
+	AudioURL	string	`json:"audioUrl"`
+	ConversationID	int	`json:"conversationID"`
 }
 
 func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http.Handler {
@@ -44,9 +47,24 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 			}
 
 			// 3. load history
-			hist := ai.NewChatHistory(db, uid)
-			rawHist, _ := hist.Load(ctx)
+			conversation_id, err := strconv.Atoi(r.URL.Query().Get("conversationID"))
+			if err != nil {
+				http.Error(w, "Error converting requestCount to int", http.StatusInternalServerError)
+				return
+			}
+
+			chat_history := ai.NewChatHistory(db, uid, conversation_id)
+
+			if chat_history.ConversationID == -1 {
+				chat_history.ConversationID, err = chat_history.CreateConversation(ctx, cfg)
+				if err != nil {
+					http.Error(w, "create conversation error", http.StatusInternalServerError)
+					return
+				}
+			}
+			rawHist, _ := chat_history.Load(ctx)
 			messages, _ := ai.MessagesFromJSON(rawHist)
+			slog.Debug("/internal/handlers/conversation_prompt.go", "Message", "Took Conversation Messages from DB", "messages", messages)
 			messages = append(messages, ai.ChatMessage{Role: "user", Content: userText})
 
 			// 4. LLM
@@ -59,8 +77,11 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 			messages = append(messages, assistant)
 
 			// 5. save history
-			raw, _ := ai.MessagesToJSON(messages)
-			_ = hist.Save(ctx, raw)
+			newMsgs, _ := ai.MessagesToJSON([]ai.ChatMessage{
+			    {Role: "user", Content: userText},
+			    assistant,
+			})
+			_ = chat_history.Save(ctx, cfg, newMsgs)
 
 			// 6. TTS
 			audioMP3, err := ai.Synthesize(ctx, assistant.Content,
@@ -72,9 +93,10 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 			token := store.Put(audioMP3)
 
 			resp := promptRsp{
-				User:	 userText,
-				Vox:	  assistant.Content,
-				AudioURL: "/conversation/audio?token=" + token,
+				User:			userText,
+				Vox:			assistant.Content,
+				AudioURL:		"/conversation/audio?token=" + token,
+				ConversationID:		chat_history.ConversationID,
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(resp)

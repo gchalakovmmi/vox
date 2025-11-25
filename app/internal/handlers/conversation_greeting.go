@@ -16,11 +16,16 @@ type greetingRsp struct {
 
 func ConversationGreeting(cfg *config.Config, store *ai.AudioStore) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		text := cfg.GetConversationDefaultGreeting()
+		greeting_text := cfg.GetConversationDefaultGreeting()
 
-		ctx := context.Background()
-		audioMP3, err := ai.Synthesize(ctx, text,
-			cfg.GetTTSOpenAIURL(), cfg.GetTTSOpenAIModel(), cfg.GetTTSOpenAIVoice(), cfg.GetTTSOpenAIAPIKey())
+		audioMP3, err := ai.Synthesize(
+			context.Background(), 
+			greeting_text, 
+			cfg.GetTTSOpenAIURL(), 
+			cfg.GetTTSOpenAIModel(), 
+			cfg.GetTTSOpenAIVoice(), 
+			cfg.GetTTSOpenAIAPIKey())
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -28,7 +33,7 @@ func ConversationGreeting(cfg *config.Config, store *ai.AudioStore) http.Handler
 		token := store.Put(audioMP3)
 
 		resp := greetingRsp{
-			Text:	 text,
+			Text:	 greeting_text,
 			AudioURL: "/conversation/audio?token=" + token,
 		}
 		w.Header().Set("Content-Type", "application/json")

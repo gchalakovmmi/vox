@@ -1,4 +1,3 @@
-/* conversation.js -------------------------------------------------- */
 const infoP	 = document.getElementById('info');
 const chatDiv = document.getElementById('chat');
 
@@ -14,6 +13,7 @@ let mediaRecorder= null;
 let audioChunks	= [];
 let recordStart	= 0;			// performance.now()
 let audioPlayer = null;			// current HTMLAudioElement
+let conversationID = -1;
 
 /* helpers --------------------------------------------------------- */
 function addChat(sender, text){
@@ -27,7 +27,7 @@ function setInfo(txt){ infoP.textContent = txt; }
 /* audio playback -------------------------------------------------- */
 async function playAudio(url){
 	state = STATE.PLAYING;
-	setInfo('VOX is speaking…');
+	setInfo('Voxy is speaking…');
 	audioPlayer = new Audio(url);
 	audioPlayer.play();
 	return new Promise(res => {
@@ -51,7 +51,7 @@ document.addEventListener('keydown', async e => {
 		});
 		if (!rsp.ok){ console.error(await rsp.text()); return; }
 		const data = await rsp.json();
-		addChat('VOX', data.text);
+		addChat('Voxy', data.text);
 		await playAudio(data.audioUrl);
 		state = STATE.IDLE;
 		setInfo('Hold space to answer…');
@@ -102,7 +102,7 @@ function stopRecording(){
 async function uploadAudio(blob){
 	const fd = new FormData();
 	fd.append('audio', blob, 'recording.webm');
-	const rsp = await fetch('/conversation/prompt', {
+	const rsp = await fetch('/conversation/prompt?conversationID='+conversationID, {
 		method: 'POST',
 		headers: {'Authorization':'Bearer '+getAccessToken()},
 		body: fd
@@ -115,7 +115,10 @@ async function uploadAudio(blob){
 	}
 	const data = await rsp.json();
 	addChat('You', data.user);
-	addChat('VOX', data.vox);
+	addChat('Voxy', data.vox);
+	if (conversationID === -1) {
+		conversationID = data.conversationID
+	}
 	await playAudio(data.audioUrl);
 	state = STATE.IDLE;
 	setInfo('Hold space to answer…');
