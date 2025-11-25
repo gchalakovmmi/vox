@@ -9,41 +9,45 @@ import (
 )
 
 type Config struct {
-	Port				string
-	InstanceName			string
-	LogLevel			slog.Level
+	Port					string
+	InstanceName				string
+	LogLevel				slog.Level
 
-	AccessTokenSecret		string
-	RefreshTokenSecret		string
-	EmailLoginEncryptKey		string
-	AccessTokenTTL			time.Duration
-	RefreshTokenTTL			time.Duration
+	AccessTokenSecret			string
+	RefreshTokenSecret			string
+	EmailLoginEncryptKey			string
+	AccessTokenTTL				time.Duration
+	RefreshTokenTTL				time.Duration
 
-	RedisAddress			string
-	RedisPassword			string
+	RedisAddress				string
+	RedisPassword				string
 
-	PostgresUser			string
-	PostgresPassword		string
-	PostgresDB			string
-	PostgresHost			string
+	PostgresUser				string
+	PostgresPassword			string
+	PostgresDB				string
+	PostgresHost				string
 
-	CookieSecure			bool
-	CookieSameSite			http.SameSite
+	CookieSecure				bool
+	CookieSameSite				http.SameSite
 
-	TTSOpenAIURL			string
-	TTSOpenAIModel			string
-	TTSOpenAIVoice			string
-	TTSOpenAIAPIKey			string
+	TTSOpenAIURL				string
+	TTSOpenAIModel				string
+	TTSOpenAIVoice				string
+	TTSOpenAIAPIKey				string
 
-	STTOpenAIURL			string
-	STTOpenAIAPIKey			string
-	STTOpenAIModelName		string
+	STTOpenAIURL				string
+	STTOpenAIAPIKey				string
+	STTOpenAIModelName			string
 
-	LLMOpenAIURL			string
-	LLMOpenAIAPIKey 		string
-	LLMOpenAIModelName		string
+	LLMOpenAIURL				string
+	LLMOpenAIAPIKey 			string
+	LLMOpenAIModelName			string
 
-	ConversationDefaultGreeting	string
+	ConversationDefaultGreeting		string
+
+	ConversationMatePrompt			string
+	ConversationCorrectorPrompt		string
+	ConversationAnalysisTeacherPrompt	string
 }
 
 func (c *Config) Set(key string, dest *string) {
@@ -148,6 +152,10 @@ func (c *Config) GetLLMOpenAIURL()			string		{ return c.LLMOpenAIURL }
 func (c *Config) GetLLMOpenAIAPIKey()			string		{ return c.LLMOpenAIAPIKey }
 func (c *Config) GetLLMOpenAIModelName()		string		{ return c.LLMOpenAIModelName }
 
+func (c *Config) GetConversationMatePrompt()		string		{ return c.ConversationMatePrompt }
+func (c *Config) GetConversationCorrectorPrompt()	string		{ return c.ConversationCorrectorPrompt }
+func (c *Config) GetConversationAnalysisTeacherPrompt()	string		{ return c.ConversationAnalysisTeacherPrompt }
+
 func New() *Config {
 	c := &Config{}
 
@@ -186,6 +194,10 @@ func New() *Config {
 	c.Set("LLM_OPENAI_MODEL_NAME", &c.LLMOpenAIModelName)
 
 	c.Set("CONVERSATION_DEFAULT_GREETING", &c.ConversationDefaultGreeting)
+	
+	c.Set("CONVERSATION_MATE_PROMPT", &c.ConversationMatePrompt)
+	c.Set("CONVERSATION_CORRECTOR_PROMPT", &c.ConversationCorrectorPrompt)
+	c.Set("CONVERSATION_ANALYSIS_TEACHER_PROMPT", &c.ConversationAnalysisTeacherPrompt)
 
 	return c
 }
