@@ -1,3 +1,4 @@
+-- TODO: RLS NOT ACTIVE!! App needs to connect as a non privileged user
 BEGIN;
 
 CREATE OR REPLACE FUNCTION current_app_user() RETURNS int AS $$
