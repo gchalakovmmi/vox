@@ -39,11 +39,11 @@ func (s *Server) CreateHandlers() http.Handler {
 
 	// protected
 	mux.Handle("/home", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
-		handlers.Home("home", "Home").ServeHTTP(w, r)
+		handlers.Home("/home", "Home").ServeHTTP(w, r)
 	}))
 	mux.Handle("/conversation", auth.RequireAccessToken(s.cfg, s.rdb, 
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-			handlers.Conversation("conversation", "Conversation").ServeHTTP(w, r)
+			handlers.Conversation("/conversation", "Conversation").ServeHTTP(w, r)
 	}))
 	audioStore := ai.NewAudioStore(60 * time.Second)
 
@@ -58,6 +58,11 @@ func (s *Server) CreateHandlers() http.Handler {
 	mux.Handle("/conversation/audio", auth.RequireAccessToken(s.cfg, s.rdb,
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
 			handlers.ConversationAudioTokenHandler(audioStore).ServeHTTP(w, r)
+	}))
+
+	mux.Handle("/conversation/analysis", auth.RequireAccessToken(s.cfg, s.rdb, 
+		func(w http.ResponseWriter, r *http.Request, uid uint) {
+			handlers.ConversationAnalysis("/conversation/analysis", "Conversation Analysis").ServeHTTP(w, r)
 	}))
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
