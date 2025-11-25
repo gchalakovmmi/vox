@@ -9,7 +9,6 @@ import (
 	"vox/internal/config"
 	"vox/internal/postgres"
 	"strconv"
-	"log/slog"
 )
 
 type promptRsp struct {
@@ -64,11 +63,15 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 			}
 			rawHist, _ := chat_history.Load(ctx)
 			messages, _ := ai.MessagesFromJSON(rawHist)
-			slog.Debug("/internal/handlers/conversation_prompt.go", "Message", "Took Conversation Messages from DB", "messages", messages)
+
+			system_prompt := ai.ChatMessage{Role: "system", Content: cfg.GetConversationMatePrompt()}
+			llmMessages := append([]ai.ChatMessage{system_prompt}, messages...)
+			llmMessages = append(llmMessages, ai.ChatMessage{Role: "user", Content: userText})
+
 			messages = append(messages, ai.ChatMessage{Role: "user", Content: userText})
 
 			// 4. LLM
-			assistant, err := ai.ChatCompletion(ctx, messages,
+			assistant, err := ai.ChatCompletion(ctx, llmMessages,
 				cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
 			if err != nil {
 				http.Error(w, "llm error", http.StatusInternalServerError)
