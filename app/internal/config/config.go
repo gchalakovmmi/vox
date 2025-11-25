@@ -34,6 +34,7 @@ type Config struct {
 	TTSOpenAIModel				string
 	TTSOpenAIVoice				string
 	TTSOpenAIAPIKey				string
+	TTSAudioTimeToLive			time.Duration
 
 	STTOpenAIURL				string
 	STTOpenAIAPIKey				string
@@ -142,6 +143,9 @@ func (c *Config) GetTTSOpenAIURL()			string   	{ return c.TTSOpenAIURL }
 func (c *Config) GetTTSOpenAIModel()			string		{ return c.TTSOpenAIModel }
 func (c *Config) GetTTSOpenAIVoice()			string		{ return c.TTSOpenAIVoice }
 func (c *Config) GetTTSOpenAIAPIKey()			string		{ return c.TTSOpenAIAPIKey }
+
+func (c *Config) GetTTSAudioTimeToLive()		time.Duration	{ return c.TTSAudioTimeToLive }
+
 func (c *Config) GetConversationDefaultGreeting()	string		{ return c.ConversationDefaultGreeting}
 
 func (c *Config) GetSTTOpenAIURL()			string		{ return c.STTOpenAIURL }
@@ -184,6 +188,8 @@ func New() *Config {
 	c.Set("TTS_OPENAI_MODEL_NAME", &c.TTSOpenAIModel)
 	c.Set("TTS_OPENAI_VOICE", &c.TTSOpenAIVoice)
 	c.Set("TTS_OPENAI_API_KEY", &c.TTSOpenAIAPIKey)
+
+	c.SetDuration("TTS_AUDIO_TIME_TO_LIVE", &c.TTSAudioTimeToLive)
 
 	c.Set("STT_OPENAI_URL", &c.STTOpenAIURL)
 	c.Set("STT_OPENAI_API_KEY", &c.STTOpenAIAPIKey)

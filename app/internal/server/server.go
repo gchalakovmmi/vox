@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/redis/go-redis/v9"
 	"vox/internal/auth"
@@ -45,8 +44,8 @@ func (s *Server) CreateHandlers() http.Handler {
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
 			handlers.Conversation("/conversation", "Conversation").ServeHTTP(w, r)
 	}))
-	audioStore := ai.NewAudioStore(60 * time.Second)
 
+	audioStore := ai.NewAudioStore(s.cfg.GetTTSAudioTimeToLive())
 	mux.Handle("/conversation/greeting", auth.RequireAccessToken(s.cfg, s.rdb,
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
 			handlers.ConversationGreeting(s.cfg, audioStore).ServeHTTP(w, r)
