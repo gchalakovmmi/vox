@@ -14,6 +14,7 @@ import (
 type promptRsp struct {
 	User		string	`json:"user"`
 	Vox		string	`json:"vox"`
+	Correction	string	`json:"correction"`
 	AudioURL	string	`json:"audioUrl"`
 	ConversationID	int	`json:"conversationID"`
 }
@@ -63,16 +64,25 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 			}
 			rawHist, _ := chat_history.Load(ctx)
 			messages, _ := ai.MessagesFromJSON(rawHist)
+			messages = append(messages, ai.ChatMessage{Role: "user", Content: userText})
 
+			// 4. Correction
+			correction_system_prompt := ai.ChatMessage{Role: "system", Content: cfg.GetConversationCorrectorPrompt()}
+			correctionMessages := append([]ai.ChatMessage{correction_system_prompt}, messages...)
+			correctionMessages = append(correctionMessages, ai.ChatMessage{Role: "user", Content: userText})
+
+			correction, err := ai.ChatCompletion(ctx, correctionMessages, cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
+			if err != nil {
+				http.Error(w, "correction error", http.StatusInternalServerError)
+				return
+			}
+
+			// 4. LLM
 			system_prompt := ai.ChatMessage{Role: "system", Content: cfg.GetConversationMatePrompt()}
 			llmMessages := append([]ai.ChatMessage{system_prompt}, messages...)
 			llmMessages = append(llmMessages, ai.ChatMessage{Role: "user", Content: userText})
 
-			messages = append(messages, ai.ChatMessage{Role: "user", Content: userText})
-
-			// 4. LLM
-			assistant, err := ai.ChatCompletion(ctx, llmMessages,
-				cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
+			assistant, err := ai.ChatCompletion(ctx, llmMessages, cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
 			if err != nil {
 				http.Error(w, "llm error", http.StatusInternalServerError)
 				return
@@ -81,8 +91,8 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 
 			// 5. save history
 			newMsgs, _ := ai.MessagesToJSON([]ai.ChatMessage{
-			    {Role: "user", Content: userText},
-			    assistant,
+				{Role: "user", Content: userText},
+				assistant,
 			})
 			_ = chat_history.Save(ctx, cfg, newMsgs)
 
@@ -98,6 +108,7 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 			resp := promptRsp{
 				User:			userText,
 				Vox:			assistant.Content,
+				Correction:		correction.Content,
 				AudioURL:		"/conversation/audio?token=" + token,
 				ConversationID:		chat_history.ConversationID,
 			}

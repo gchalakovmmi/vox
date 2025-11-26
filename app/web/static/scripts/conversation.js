@@ -115,6 +115,7 @@ async function uploadAudio(blob){
 	}
 	const data = await rsp.json();
 	addChat('You', data.user);
+	addChat('Correction', data.correction);
 	addChat('Voxy', data.vox);
 	if (conversationID === -1) {
 		conversationID = data.conversationID
