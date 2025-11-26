@@ -1,0 +1,23 @@
+package conversation
+import (
+    up "vox/internal/userProfile"
+)
+templ panel(userProfile *up.UserProfile) {
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-indigo">Conversation</h5>
+                    <a id="end" href="#" class="btn btn-light btn-sm rounded-pill d-none">End session</a>
+                </div>
+                <div class="card-body p-0">
+                    <div id="chat" class="p-3" style="height:50vh; overflow-y:auto;"></div>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>Hold <kbd>Space</kbd> to talk – release to send</small>
+                </div>
+            </div>
+            <p id="info" class="text-center mt-3">Press space to start</p>
+        </div>
+    </div>
+}

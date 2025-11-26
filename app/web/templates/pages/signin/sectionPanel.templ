@@ -1,0 +1,36 @@
+package signin
+import (
+    up "vox/internal/userProfile"
+    "net/url"
+)
+templ panel(userProfile *up.UserProfile) {
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header text-center py-3">
+                    <h4 class="fw-bold text-indigo mb-0">Sign In</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/process-signin" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" value={ url.QueryUnescape(userProfile.Email) } required/>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required/>
+                        </div>
+                        <button class="btn btn-secondary w-100">Sign In</button>
+                    </form>
+                    <hr class="my-4">
+                    <div class="d-grid">
+                        <button class="btn btn-outline-light btn-sm d-flex align-items-center justify-content-center gap-2">
+                            <img src="/web/static/images/google-logo.webp" width="20" height="20"/>
+                            <span>Continue with Google</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

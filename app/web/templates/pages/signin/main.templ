@@ -1,0 +1,21 @@
+package signin
+
+import (
+	"vox/web/templates/base"
+	sm "vox/internal/status_message"
+	up "vox/internal/userProfile"
+)
+
+templ styles() {
+}
+
+templ scripts() {
+}
+
+templ sections(userProfile *up.UserProfile) {
+	@panel(userProfile)
+}
+
+templ Handler(page string, title string, statusMessage sm.StatusMessage, userProfile *up.UserProfile) {
+	@base.Base(page, title, styles(), scripts(), sections(userProfile), statusMessage, userProfile)
+}

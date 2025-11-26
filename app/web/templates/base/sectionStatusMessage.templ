@@ -1,0 +1,49 @@
+package base
+
+import (
+	sm "vox/internal/status_message"
+)
+
+func getStatusMessagePhrase(key string) string {
+	messages := map[string]string{
+		// Error messages
+		"signup_first_name":		"Please enter a first name.",
+		"signup_last_name":		"Please enter a last name.",
+		"signup_email":			"Please enter a valid email address.",
+		"signup_password_length":	"Password must be at least 8 characters long.",
+		"signup_password_uppercase":	"Password must contain at least one uppercase letter.",
+		"signup_password_lowercase":	"Password must contain at least one lowercase letter.",
+		"signup_password_number":	"Password must contain at least one number.",
+		"signup_password_special":	"Password must contain at least one special character.",
+		"signup_repeated_password":	"Passwords do not match.",
+		"signup_hashing":		"Error hashing password.",
+		"signup_duplicate_email":	"This email is already used by another user.",
+		"signup_insert_user":		"Failed to create user.",
+		"signin_wrong_credentials":	"Wrong credentials.",
+		"db":				"Database error",
+		
+		// Info messages
+		"signin_user_created":		"Account created successfuly",
+	}
+
+	if message, exists := messages[key]; exists {
+		return message
+	}
+	
+	return key
+}
+
+templ statusMessage(m sm.StatusMessage) {
+    if m.Info != "" {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            { m.Info }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    if m.Err != "" {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            { m.Err }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+}
