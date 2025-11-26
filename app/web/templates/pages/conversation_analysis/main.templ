@@ -9,10 +9,13 @@ import (
 
 templ styles() {}
 
-templ scripts() {}
+templ scripts() {
+<script src="/web/static/scripts/conversation_analysis.js"></script>
+}
 
 templ sections(userProfile *up.UserProfile, messages []ai.ChatMessage) {
 	@chat(userProfile, messages)
+	@feedback()
 }
 
 templ Handler(page string, title string, statusMessage sm.StatusMessage, userProfile *up.UserProfile, messages []ai.ChatMessage) {

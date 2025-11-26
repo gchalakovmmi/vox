@@ -64,6 +64,11 @@ func (s *Server) CreateHandlers() http.Handler {
 			handlers.ConversationAnalysis("/conversation/analysis", "Conversation Analysis", s.cfg, uid).ServeHTTP(w, r)
 	}))
 
+	mux.Handle("/conversation/analysis/feedback", auth.RequireAccessToken(s.cfg, s.rdb,
+		func(w http.ResponseWriter, r *http.Request, uid uint) {
+		handlers.ConversationAnalysisFeedback(uid, s.cfg).ServeHTTP(w, r)
+	}))
+
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
 	}))
