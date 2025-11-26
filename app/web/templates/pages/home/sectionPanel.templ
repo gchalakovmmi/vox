@@ -1,11 +1,13 @@
 package home
-
 import (
-	up "vox/internal/userProfile"
+    up "vox/internal/userProfile"
 )
-
-templ panel(userProfile *up.UserProfile){
-	<h1>Welcome {userProfile.FirstName}!</h1>
-	<h3>Are you ready for your daily dose of practice?</h3>
-	<a href="/conversation">Conversation</a>
+templ panel(userProfile *up.UserProfile) {
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <h1 class="fw-bold text-indigo mb-3">Welcome back, { userProfile.FirstName }!</h1>
+            <p class="lead mb-4">Ready for today’s practice?</p>
+            <a href="/conversation" class="btn btn-secondary btn-lg px-5">Start Conversation</a>
+        </div>
+    </div>
 }

@@ -1,31 +1,28 @@
 package base
-
 import (
 	up "vox/internal/userProfile"
 	sm "vox/internal/status_message"
 )
-
-templ Base(page string, title string, styles, scripts, sections templ.Component, statMessage sm.StatusMessage, userProfile *up.UserProfile) {
+templ Base(page, title string, styles, scripts, sections templ.Component, statMessage sm.StatusMessage, userProfile *up.UserProfile) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" data-bs-theme="dark">
 		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>VOX { title }</title>
-			<link rel="icon" type="image/x-icon" href="/web/static/icons/favicon.ico"/>
-			<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>{ title }</title>
+			<link rel="icon" href="/web/static/icons/favicon.ico"/>
+			<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
 			@styles
 		</head>
-		<body class="d-flex flex-column min-vh-100">
+		<body class="d-flex flex-column min-vh-100 bg-dark text-light">
 			@navbar(page, userProfile)
-			<main class="flex-grow-1">
+			<main class="flex-grow-1 container my-4">
 				@statusMessage(statMessage)
 				@sections
 			</main>
 			@footer()
-
 			@scripts
-			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 		</body>
 	</html>
 }

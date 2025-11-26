@@ -1,21 +1,19 @@
 package conversation_analysis
-
 import (
-	up "vox/internal/userProfile"
-	"vox/internal/ai"
+    up "vox/internal/userProfile"
+    "vox/internal/ai"
 )
-
 templ chat(userProfile *up.UserProfile, messages []ai.ChatMessage) {
-	<div id="chat-history" class="p-3 border rounded bg-light" style="max-height:60vh; overflow-y:auto;">
-		if len(messages) == 0 {
-			<p class="text-muted">No messages yet.</p>
-		} else {
-			for _, m := range messages {
-		<div class={ "mb-2", templ.KV("text-end", m.Role == "user") }>
-					<strong>{ m.Role }:</strong>
-					<span class="d-block">{ m.Content }</span>
-				</div>
-			}
-		}
-	</div>
+    <div id="chat-history" class="p-3 border rounded bg-dark border-secondary" style="max-height:60vh; overflow-y:auto;">
+        if len(messages) == 0 {
+            <p class="text-muted">No messages yet.</p>
+        } else {
+            for _, m := range messages {
+                <div class={ "mb-2", templ.KV(templ.Class("text-end"), m.Role == "user") }>
+                    <strong class="me-2">{ m.Role }:</strong>
+                    <span class="d-block">{ m.Content }</span>
+                </div>
+            }
+        }
+    </div>
 }

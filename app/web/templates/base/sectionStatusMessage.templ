@@ -33,15 +33,17 @@ func getStatusMessagePhrase(key string) string {
 	return key
 }
 
-templ statusMessage(statusMessage sm.StatusMessage) {
-	if statusMessage.Info != "" {
-		<div class="alert alert-info" role="alert">
-			{ getStatusMessagePhrase(statusMessage.Info) }
-		</div>
-	}
-	if statusMessage.Err != "" {
-		<div class="alert alert-danger" role="alert">
-			{ getStatusMessagePhrase(statusMessage.Err) }
-		</div>
-	}
+templ statusMessage(m sm.StatusMessage) {
+    if m.Info != "" {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            { m.Info }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    if m.Err != "" {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            { m.Err }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 }

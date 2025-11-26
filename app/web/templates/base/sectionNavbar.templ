@@ -1,28 +1,49 @@
 package base
-
 import (
     up "vox/internal/userProfile"
 )
-
 templ navbar(page string, userProfile *up.UserProfile) {
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-body-secondary border-bottom border-secondary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">VOX</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand fw-bold text-indigo" href="/home">VOX</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <div class="collapse navbar-collapse" id="navmenu">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-2">
+                    if userProfile.ID != 0 {
+                        <li class="nav-item">
+                            <a class={ "nav-link", templ.KV("active", page == "home") } href="/home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class={ "nav-link", templ.KV("active", page == "conversation") } href="/conversation">Conversation</a>
+                        </li>
+                    }
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0 gap-3">
                     if userProfile.ID == 0 {
                         <li class="nav-item">
-                            <a class={ "nav-link", templ.KV("active", page == "signin") } href={ templ.URL("/signin") }>Sign In</a>
+                            <a class={ "nav-link", templ.KV("active", page == "signin") } href="/signin">Sign In</a>
                         </li>
                         <li class="nav-item">
-                            <a class={ "nav-link", templ.KV("active", page == "signup") } href={ templ.URL("/signup") }>Sign Up</a>
+                            <a class={ "nav-link", templ.KV("active", page == "signup") } href="/signup">Sign Up</a>
                         </li>
                     } else {
-                        <li class="nav-item">
-                            <a class={ "nav-link", templ.KV("active", page == "signout") } href={ templ.URL("/signout") }>Sign Out</a>
+                        <!-- Profile -->
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-outline-light d-flex align-items-center gap-2 px-2 py-1" href="#" role="button" data-bs-toggle="dropdown">
+                                <img src="/web/static/icons/default_user.png" class="rounded" width="32" height="32"/>
+                                <span class="d-none d-lg-inline">{ userProfile.FirstName }</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="/signout" method="post">
+                                        <button class="dropdown-item">Sign Out</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     }
                 </ul>

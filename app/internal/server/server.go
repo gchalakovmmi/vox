@@ -40,13 +40,13 @@ func (s *Server) CreateHandlers() http.Handler {
 	// protected
 	mux.Handle("/home", auth.RequireAccessToken(s.cfg, s.rdb,
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-		// ➜  inject uid into the request that reaches WithAuthentication
-		ctx := context.WithValue(r.Context(), auth.CtxKeyUID, uid)
-		handlers.Home("/home", "Home", s.cfg).ServeHTTP(w, r.WithContext(ctx))
+			ctx := context.WithValue(r.Context(), auth.CtxKeyUID, uid)
+			handlers.Home("/home", "Home", s.cfg).ServeHTTP(w, r.WithContext(ctx))
 	}))
 	mux.Handle("/conversation", auth.RequireAccessToken(s.cfg, s.rdb, 
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-			handlers.Conversation("/conversation", "Conversation", s.cfg).ServeHTTP(w, r)
+			ctx := context.WithValue(r.Context(), auth.CtxKeyUID, uid)
+			handlers.Conversation("/conversation", "Conversation", s.cfg).ServeHTTP(w, r.WithContext(ctx))
 	}))
 
 	audioStore := ai.NewAudioStore(s.cfg.GetTTSAudioTimeToLive())
@@ -65,12 +65,14 @@ func (s *Server) CreateHandlers() http.Handler {
 
 	mux.Handle("/conversation/analysis", auth.RequireAccessToken(s.cfg, s.rdb, 
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-			handlers.ConversationAnalysis("/conversation/analysis", "Conversation Analysis", s.cfg, uid).ServeHTTP(w, r)
+			ctx := context.WithValue(r.Context(), auth.CtxKeyUID, uid)
+			handlers.ConversationAnalysis("/conversation/analysis", "Conversation Analysis", s.cfg, uid).ServeHTTP(w, r.WithContext(ctx))
 	}))
 
 	mux.Handle("/conversation/analysis/feedback", auth.RequireAccessToken(s.cfg, s.rdb,
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-		handlers.ConversationAnalysisFeedback(uid, s.cfg).ServeHTTP(w, r)
+			ctx := context.WithValue(r.Context(), auth.CtxKeyUID, uid)
+			handlers.ConversationAnalysisFeedback(uid, s.cfg).ServeHTTP(w, r.WithContext(ctx))
 	}))
 
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
