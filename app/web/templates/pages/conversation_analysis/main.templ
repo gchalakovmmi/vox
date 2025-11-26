@@ -4,20 +4,17 @@ import (
 	"vox/web/templates/base"
 	sm "vox/internal/status_message"
 	up "vox/internal/userProfile"
+	"vox/internal/ai"
 )
 
+templ styles() {}
 
+templ scripts() {}
 
-templ styles() {
+templ sections(userProfile *up.UserProfile, messages []ai.ChatMessage) {
+	@chat(userProfile, messages)
 }
 
-templ scripts() {
-}
-
-templ sections() {
-	@panel()
-}
-
-templ Handler(page string, title string, statusMessage sm.StatusMessage, userProfile *up.UserProfile) {
-	@base.Base(page, title, styles(), scripts(), sections(), statusMessage, userProfile)
+templ Handler(page string, title string, statusMessage sm.StatusMessage, userProfile *up.UserProfile, messages []ai.ChatMessage) {
+	@base.Base(page, title, styles(), scripts(), sections(userProfile, messages), statusMessage, userProfile)
 }
