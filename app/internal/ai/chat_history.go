@@ -66,8 +66,7 @@ func (h *ChatHistory) Load(ctx context.Context) (string, error) {
 		JOIN conversations c ON c.id = m.conversation_id
 		WHERE c.user_id = $1
 			AND c.id = $2
-		ORDER BY c.created_at DESC, m.created_at ASC
-		LIMIT 1
+		ORDER BY m.created_at ASC;
 	`
 	rows, err := h.db.QueryContext(ctx, q, h.userID, h.ConversationID)
 	if err != nil {
