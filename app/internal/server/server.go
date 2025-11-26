@@ -8,6 +8,7 @@ import (
 	"vox/internal/config"
 	"vox/internal/handlers"
 	"vox/internal/ai"
+	"context"
 )
 
 type Server struct {
@@ -37,12 +38,15 @@ func (s *Server) CreateHandlers() http.Handler {
 	mux.Handle("/auth/refresh",	auth.TokenRefreshHandler(s.cfg, s.rdb))
 
 	// protected
-	mux.Handle("/home", auth.RequireAccessToken(s.cfg, s.rdb, func(w http.ResponseWriter, r *http.Request, uid uint) {
-		handlers.Home("/home", "Home").ServeHTTP(w, r)
+	mux.Handle("/home", auth.RequireAccessToken(s.cfg, s.rdb,
+		func(w http.ResponseWriter, r *http.Request, uid uint) {
+		// ➜  inject uid into the request that reaches WithAuthentication
+		ctx := context.WithValue(r.Context(), auth.CtxKeyUID, uid)
+		handlers.Home("/home", "Home", s.cfg).ServeHTTP(w, r.WithContext(ctx))
 	}))
 	mux.Handle("/conversation", auth.RequireAccessToken(s.cfg, s.rdb, 
 		func(w http.ResponseWriter, r *http.Request, uid uint) {
-			handlers.Conversation("/conversation", "Conversation").ServeHTTP(w, r)
+			handlers.Conversation("/conversation", "Conversation", s.cfg).ServeHTTP(w, r)
 	}))
 
 	audioStore := ai.NewAudioStore(s.cfg.GetTTSAudioTimeToLive())

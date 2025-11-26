@@ -1,44 +1,32 @@
 package base
 
 import (
-	up "vox/internal/userProfile"
+    up "vox/internal/userProfile"
 )
 
-type Link struct {
-	Endpoint	string
-	Text		string
-}
-
 templ navbar(page string, userProfile *up.UserProfile) {
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-	<div class="container-fluid">
-		<a class="navbar-brand" href="#">VOX</a>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				{{links := [...] Link {
-					{"signin", "Sign In"},
-					{"signup", "Sign Up"},
-				}}}
-				for _, link := range links {
-					<li class="nav-item">
-						{{linkClasses := "nav-link"
-						if page == link.Endpoint {
-							linkClasses = linkClasses + " active"
-						}}}
-						<a 
-							class={ linkClasses } 
-							aria-current="page" 
-							href={ templ.URL("/" + link.Endpoint) }
-						>
-							{ link.Text }
-						</a>
-					</li>
-				}
-			</ul>
-		</div>
-	</div>
-</nav>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">VOX</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    if userProfile.ID == 0 {
+                        <li class="nav-item">
+                            <a class={ "nav-link", templ.KV("active", page == "signin") } href={ templ.URL("/signin") }>Sign In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class={ "nav-link", templ.KV("active", page == "signup") } href={ templ.URL("/signup") }>Sign Up</a>
+                        </li>
+                    } else {
+                        <li class="nav-item">
+                            <a class={ "nav-link", templ.KV("active", page == "signout") } href={ templ.URL("/signout") }>Sign Out</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
 }

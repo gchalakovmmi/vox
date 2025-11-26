@@ -16,7 +16,7 @@ import (
 
 func ConversationAnalysis(page, title string, cfg *config.Config, uid uint) http.Handler {
     return sm.WithStatusMessage(func(statusMessage sm.StatusMessage) http.Handler {
-        return auth.WithAuthentication(func(userProfile up.UserProfile) http.Handler {
+        return auth.WithAuthentication(cfg, func(userProfile up.UserProfile) http.Handler {
             return postgres.WithDBConn(cfg, func(db *sql.DB) http.Handler {
                 return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
                     convID, err := strconv.Atoi(r.URL.Query().Get("id"))

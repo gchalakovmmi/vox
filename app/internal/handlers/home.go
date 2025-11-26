@@ -7,11 +7,12 @@ import (
 	up "vox/internal/userProfile"
 	sm "vox/internal/status_message"
 	"vox/internal/auth"
+	"vox/internal/config"
 )
 
-func Home(page string, title string) http.Handler {
+func Home(page string, title string, cfg *config.Config) http.Handler {
 	return sm.WithStatusMessage(func(statusMessage sm.StatusMessage) http.Handler {
-		return auth.WithAuthentication(func(userProfile up.UserProfile) http.Handler {
+		return auth.WithAuthentication(cfg, func(userProfile up.UserProfile) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				templ.Handler(home.Handler(page, title, statusMessage, &userProfile)).ServeHTTP(w, r)
 			})

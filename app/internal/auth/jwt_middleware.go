@@ -124,3 +124,12 @@ func bearerOrCookie(r *http.Request) string {
 	}
 	return ""
 }
+
+type CtxKey string
+const CtxKeyUID CtxKey = "uid"
+
+// UIDFromContext pulls the uid back out (optional convenience).
+func UIDFromContext(ctx context.Context) (uint, bool) {
+    id, ok := ctx.Value(CtxKeyUID).(uint)
+    return id, ok
+}
