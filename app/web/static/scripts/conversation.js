@@ -119,6 +119,11 @@ async function uploadAudio(blob){
 	addChat('Voxy', data.vox);
 	if (conversationID === -1) {
 		conversationID = data.conversationID
+
+		const endBtn= document.getElementById("end");
+		endBtn.classList.remove("d-none");
+		endBtn.classList.add("d-block");
+		endBtn.href = "/conversation/analysis?id="+conversationID;
 	}
 	await playAudio(data.audioUrl);
 	state = STATE.IDLE;
