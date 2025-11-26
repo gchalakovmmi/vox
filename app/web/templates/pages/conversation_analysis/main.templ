@@ -1,23 +1,18 @@
 package conversation_analysis
-
 import (
-	"vox/web/templates/base"
-	sm "vox/internal/status_message"
-	up "vox/internal/userProfile"
-	"vox/internal/ai"
+    "vox/web/templates/base"
+    sm "vox/internal/status_message"
+    up "vox/internal/userProfile"
+    "vox/internal/ai"
 )
-
 templ styles() {}
-
 templ scripts() {
-<script src="/web/static/scripts/conversation_analysis.js"></script>
+    <script src="/web/static/scripts/conversation_analysis.js"></script>
 }
-
 templ sections(userProfile *up.UserProfile, messages []ai.ChatMessage) {
-	@chat(userProfile, messages)
-	@feedback()
+    @chat(userProfile, messages)
+    @feedback()
 }
-
 templ Handler(page string, title string, statusMessage sm.StatusMessage, userProfile *up.UserProfile, messages []ai.ChatMessage) {
-	@base.Base(page, title, styles(), scripts(), sections(userProfile, messages), statusMessage, userProfile)
+    @base.Base(page, title, styles(), scripts(), sections(userProfile, messages), statusMessage, userProfile)
 }
