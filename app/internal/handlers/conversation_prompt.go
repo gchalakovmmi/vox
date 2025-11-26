@@ -9,6 +9,7 @@ import (
 	"vox/internal/config"
 	"vox/internal/postgres"
 	"strconv"
+	"sync"
 )
 
 type promptRsp struct {
@@ -66,27 +67,44 @@ func ConversationPrompt(cfg *config.Config, store *ai.AudioStore, uid uint) http
 			messages, _ := ai.MessagesFromJSON(rawHist)
 			messages = append(messages, ai.ChatMessage{Role: "user", Content: userText})
 
-			// 4. Correction
-			correction_system_prompt := ai.ChatMessage{Role: "system", Content: cfg.GetConversationCorrectorPrompt()}
-			correctionMessages := append([]ai.ChatMessage{correction_system_prompt}, messages...)
-			correctionMessages = append(correctionMessages, ai.ChatMessage{Role: "user", Content: userText})
-
-			correction, err := ai.ChatCompletion(ctx, correctionMessages, cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
-			if err != nil {
-				http.Error(w, "correction error", http.StatusInternalServerError)
-				return
-			}
-
-			// 4. LLM
-			system_prompt := ai.ChatMessage{Role: "system", Content: cfg.GetConversationMatePrompt()}
-			llmMessages := append([]ai.ChatMessage{system_prompt}, messages...)
-			llmMessages = append(llmMessages, ai.ChatMessage{Role: "user", Content: userText})
-
-			assistant, err := ai.ChatCompletion(ctx, llmMessages, cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
-			if err != nil {
+			// 4. Run LLM and Correction in parallel
+			var wg sync.WaitGroup
+			wg.Add(2)
+			
+			var assistant ai.ChatMessage
+			var correction ai.ChatMessage
+			var llmErr error
+			var corrErr error
+			
+			// LLM goroutine
+			go func() {
+				defer wg.Done()
+				system_prompt := ai.ChatMessage{Role: "system", Content: cfg.GetConversationMatePrompt()}
+				llmMessages := append([]ai.ChatMessage{system_prompt}, messages...)
+				llmMessages = append(llmMessages, ai.ChatMessage{Role: "user", Content: userText})
+				assistant, llmErr = ai.ChatCompletion(ctx, llmMessages, cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
+			}()
+			
+			// Correction goroutine
+			go func() {
+				defer wg.Done()
+				correction_system_prompt := ai.ChatMessage{Role: "system", Content: cfg.GetConversationCorrectorPrompt()}
+				correctionMessages := append([]ai.ChatMessage{correction_system_prompt}, messages...)
+				correctionMessages = append(correctionMessages, ai.ChatMessage{Role: "user", Content: userText})
+				correction, corrErr = ai.ChatCompletion(ctx, correctionMessages, cfg.GetLLMOpenAIURL(), cfg.GetLLMOpenAIAPIKey(), cfg.GetLLMOpenAIModelName())
+			}()
+			
+			wg.Wait()
+			
+			if llmErr != nil {
 				http.Error(w, "llm error", http.StatusInternalServerError)
 				return
 			}
+			if corrErr != nil {
+				http.Error(w, "correction error", http.StatusInternalServerError)
+				return
+			}
+			
 			messages = append(messages, assistant)
 
 			// 5. save history
